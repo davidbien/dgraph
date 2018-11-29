@@ -142,7 +142,7 @@ SOURCE=.\_gr_todo.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\bienutil\dbgthrw.cpp
+SOURCE=..\dbgthrw.cpp
 # End Source File
 # End Group
 # Begin Group "Header Files"
@@ -150,7 +150,7 @@ SOURCE=..\bienutil\dbgthrw.cpp
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
 # Begin Source File
 
-SOURCE=..\bienutil\_allbase.h
+SOURCE=..\_allbase.h
 # End Source File
 # Begin Source File
 
@@ -162,11 +162,11 @@ SOURCE=..\stdlib\_basemap.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\bienutil\_bitutil.h
+SOURCE=..\_bitutil.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\bienutil\_booltyp.h
+SOURCE=..\_booltyp.h
 # End Source File
 # Begin Source File
 
@@ -174,7 +174,7 @@ SOURCE=..\stdlib\_booltyp.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\bienutil\_dbgthrw.h
+SOURCE=..\_dbgthrw.h
 # End Source File
 # Begin Source File
 
@@ -190,7 +190,7 @@ SOURCE=..\stdlib\_fcdtor.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\bienutil\_garcoll.h
+SOURCE=..\_garcoll.h
 # End Source File
 # Begin Source File
 
@@ -310,7 +310,7 @@ SOURCE=.\_graph.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\bienutil\_oleutil.h
+SOURCE=..\_oleutil.h
 # End Source File
 # Begin Source File
 
@@ -318,19 +318,19 @@ SOURCE=..\stdlib\_ref.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\bienutil\_sdp.h
+SOURCE=..\_sdp.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\bienutil\_sdpd.h
+SOURCE=..\_sdpd.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\bienutil\_sdpn.h
+SOURCE=..\_sdpn.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\bienutil\_sdpv.h
+SOURCE=..\_sdpv.h
 # End Source File
 # Begin Source File
 
@@ -350,7 +350,7 @@ SOURCE=..\stdlib\_typemap.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\bienutil\bienutil.h
+SOURCE=..\bienutil.h
 # End Source File
 # End Group
 # Begin Group "Resource Files"

@@ -1,24 +1,32 @@
-Microsoft Visual Studio Solution File, Format Version 7.00
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gr_test", "gr_test.vcproj", "{F1A2FD23-C633-45D1-B194-5BA694196F40}"
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gr_test", "gr_test.vcxproj", "{F1A2FD23-C633-45D1-B194-5BA694196F40}"
 EndProject
 Global
-	GlobalSection(SolutionConfiguration) = preSolution
-		ConfigName.0 = Debug
-		ConfigName.1 = Release
-		ConfigName.2 = Release debug
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Debug|x64 = Debug|x64
+		Release debug|Win32 = Release debug|Win32
+		Release debug|x64 = Release debug|x64
+		Release|Win32 = Release|Win32
+		Release|x64 = Release|x64
 	EndGlobalSection
-	GlobalSection(ProjectDependencies) = postSolution
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F1A2FD23-C633-45D1-B194-5BA694196F40}.Debug|Win32.ActiveCfg = Debug|Win32
+		{F1A2FD23-C633-45D1-B194-5BA694196F40}.Debug|Win32.Build.0 = Debug|Win32
+		{F1A2FD23-C633-45D1-B194-5BA694196F40}.Debug|x64.ActiveCfg = Debug|x64
+		{F1A2FD23-C633-45D1-B194-5BA694196F40}.Debug|x64.Build.0 = Debug|x64
+		{F1A2FD23-C633-45D1-B194-5BA694196F40}.Release debug|Win32.ActiveCfg = Release debug|Win32
+		{F1A2FD23-C633-45D1-B194-5BA694196F40}.Release debug|Win32.Build.0 = Release debug|Win32
+		{F1A2FD23-C633-45D1-B194-5BA694196F40}.Release debug|x64.ActiveCfg = Release debug|x64
+		{F1A2FD23-C633-45D1-B194-5BA694196F40}.Release debug|x64.Build.0 = Release debug|x64
+		{F1A2FD23-C633-45D1-B194-5BA694196F40}.Release|Win32.ActiveCfg = Release|Win32
+		{F1A2FD23-C633-45D1-B194-5BA694196F40}.Release|Win32.Build.0 = Release|Win32
+		{F1A2FD23-C633-45D1-B194-5BA694196F40}.Release|x64.ActiveCfg = Release|x64
+		{F1A2FD23-C633-45D1-B194-5BA694196F40}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
-	GlobalSection(ProjectConfiguration) = postSolution
-		{F1A2FD23-C633-45D1-B194-5BA694196F40}.Debug.ActiveCfg = Debug|Win32
-		{F1A2FD23-C633-45D1-B194-5BA694196F40}.Debug.Build.0 = Debug|Win32
-		{F1A2FD23-C633-45D1-B194-5BA694196F40}.Release.ActiveCfg = Release|Win32
-		{F1A2FD23-C633-45D1-B194-5BA694196F40}.Release.Build.0 = Release|Win32
-		{F1A2FD23-C633-45D1-B194-5BA694196F40}.Release debug.ActiveCfg = Release debug|Win32
-		{F1A2FD23-C633-45D1-B194-5BA694196F40}.Release debug.Build.0 = Release debug|Win32
-	EndGlobalSection
-	GlobalSection(ExtensibilityGlobals) = postSolution
-	EndGlobalSection
-	GlobalSection(ExtensibilityAddIns) = postSolution
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 EndGlobal

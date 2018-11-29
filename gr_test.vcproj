@@ -202,14 +202,14 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\bienutil\dbgthrw.cpp">
+				RelativePath="..\dbgthrw.cpp">
 			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl">
 			<File
-				RelativePath="..\bienutil\_allbase.h">
+				RelativePath="..\_allbase.h">
 			</File>
 			<File
 				RelativePath="..\memlib\_aloctrt.h">
@@ -218,16 +218,16 @@
 				RelativePath="..\stdlib\_basemap.h">
 			</File>
 			<File
-				RelativePath="..\bienutil\_bitutil.h">
+				RelativePath="..\_bitutil.h">
 			</File>
 			<File
 				RelativePath="..\stdlib\_booltyp.h">
 			</File>
 			<File
-				RelativePath="..\bienutil\_booltyp.h">
+				RelativePath="..\_booltyp.h">
 			</File>
 			<File
-				RelativePath="..\bienutil\_dbgthrw.h">
+				RelativePath="..\_dbgthrw.h">
 			</File>
 			<File
 				RelativePath="..\stdlib\_debug.h">
@@ -239,7 +239,7 @@
 				RelativePath="..\stdlib\_fcdtor.h">
 			</File>
 			<File
-				RelativePath="..\bienutil\_garcoll.h">
+				RelativePath="..\_garcoll.h">
 			</File>
 			<File
 				RelativePath=".\_gr_alst.h">
@@ -329,22 +329,22 @@
 				RelativePath=".\_graph.h">
 			</File>
 			<File
-				RelativePath="..\bienutil\_oleutil.h">
+				RelativePath="..\_oleutil.h">
 			</File>
 			<File
 				RelativePath="..\stdlib\_ref.h">
 			</File>
 			<File
-				RelativePath="..\bienutil\_sdp.h">
+				RelativePath="..\_sdp.h">
 			</File>
 			<File
-				RelativePath="..\bienutil\_sdpd.h">
+				RelativePath="..\_sdpd.h">
 			</File>
 			<File
-				RelativePath="..\bienutil\_sdpn.h">
+				RelativePath="..\_sdpn.h">
 			</File>
 			<File
-				RelativePath="..\bienutil\_sdpv.h">
+				RelativePath="..\_sdpv.h">
 			</File>
 			<File
 				RelativePath="..\stdlib\_simpbv.h">
@@ -359,7 +359,7 @@
 				RelativePath="..\stdlib\_typemap.h">
 			</File>
 			<File
-				RelativePath="..\bienutil\bienutil.h">
+				RelativePath="..\bienutil.h">
 			</File>
 		</Filter>
 		<Filter
