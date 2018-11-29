@@ -221,8 +221,8 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>c:\dv\bienutil;"C:\dv\STLport-5.2.1\stlport";"C:\dv\STLport-5.2.1\stlport\stl";"c:\Program Files (x86)\Microsoft Visual Studio\2017\Professional\VC\Tools\MSVC\14.15.26726\include";"C:\Program Files (x86)\Windows Kits\10\Include\10.0.17134.0\ucrt";"C:\Program Files (x86)\Windows Kits\10\Include\10.0.17134.0\um";"C:\Program Files (x86)\Windows Kits\10\Include\10.0.17134.0\shared"</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>MSVCINCLUDEC=C:\Program Files (x86)\Windows Kits\10\Include\10.0.17134.0;MSVCINCLUDECPP=c:\Program Files (x86)\Microsoft Visual Studio\2017\Professional\VC\Tools\MSVC\14.15.26726;_DEBUG;__DEBUG_THROW;_USING_V110_SDK71_;__DBIEN_ULARGEINTEGER;WIN32;_CONSOLE;__HAVE_ALLOC_TRAITS;__GR_DEFINEOLEIO;__DBIEN_LARGEINTEGER;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>c:\dv\bienutil;"C:\dv\STLport-5.2.1\stlport";"C:\dv\STLport-5.2.1\stlport\stl";"C:\Program Files (x86)\Microsoft Visual Studio\2017\Professional\VC\Tools\MSVC\14.16.27023\include";"C:\Program Files (x86)\Windows Kits\10\include\10.0.17763.0\ucrt";"C:\Program Files (x86)\Windows Kits\10\include\10.0.17763.0\um";"C:\Program Files (x86)\Windows Kits\10\include\10.0.17763.0\shared"</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>MSVCINCLUDEC=C:\Program Files (x86)\Windows Kits\10\include\10.0.17763.0;MSVCINCLUDECPP=C:\Program Files (x86)\Microsoft Visual Studio\2017\Professional\VC\Tools\MSVC\14.16.27023;_DEBUG;__DEBUG_THROW;_USING_V110_SDK71_;__DBIEN_ULARGEINTEGER;WIN32;_CONSOLE;__HAVE_ALLOC_TRAITS;__GR_DEFINEOLEIO;__DBIEN_LARGEINTEGER;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <PrecompiledHeader>
