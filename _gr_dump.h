@@ -1,6 +1,11 @@
 #ifndef __GR_DUMP_H
 #define __GR_DUMP_H
 
+//          Copyright David Lawrence Bien 1997 - 2020.
+// Distributed under the Boost Software License, Version 1.0.
+//    (See accompanying file LICENSE_1_0.txt or copy at
+//          https://www.boost.org/LICENSE_1_0.txt).
+
 // _gr_dump.h
 
 // Human-readable(barely:-) dumping of graph to a stream.

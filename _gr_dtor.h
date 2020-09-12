@@ -1,6 +1,11 @@
 #ifndef __GR_DTOR_H
 #define __GR_DTOR_H
 
+//          Copyright David Lawrence Bien 1997 - 2020.
+// Distributed under the Boost Software License, Version 1.0.
+//    (See accompanying file LICENSE_1_0.txt or copy at
+//          https://www.boost.org/LICENSE_1_0.txt).
+
 // _gr_dtor.h
 
 // This module provides functions for destructing graph nodes.

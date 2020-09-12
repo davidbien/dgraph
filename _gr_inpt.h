@@ -1,6 +1,11 @@
 #ifndef __GR_INPT_H
 #define __GR_INPT_H
 
+//          Copyright David Lawrence Bien 1997 - 2020.
+// Distributed under the Boost Software License, Version 1.0.
+//    (See accompanying file LICENSE_1_0.txt or copy at
+//          https://www.boost.org/LICENSE_1_0.txt).
+
 // _gr_inpt.h
 
 // This module implements an input iterator for graphs.

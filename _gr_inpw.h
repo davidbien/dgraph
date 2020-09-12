@@ -1,7 +1,12 @@
 #ifndef __GR_INPW_H
 #define __GR_INPW_H
 
-// _gr_inpt.h
+//          Copyright David Lawrence Bien 1997 - 2020.
+// Distributed under the Boost Software License, Version 1.0.
+//    (See accompanying file LICENSE_1_0.txt or copy at
+//          https://www.boost.org/LICENSE_1_0.txt).
+
+// _gr_inpw.h
 
 // This module defines the input iterator typed wrapper for graphs.
 
