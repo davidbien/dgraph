@@ -148,7 +148,7 @@ public:
   _TyUnfinishedNodeArrayEl *  m_punCur;
 
   // comparison object for sort:
-  typedef less< _TyUnfinishedNodeArrayEl >    _TyCompareVisitedTime;
+  typedef greater< _TyUnfinishedNodeArrayEl >    _TyCompareVisitedTime;
 
   // Input stream object:
   typedef typename t_TyInputStreamBase::_TyStreamPos  _TyStreamPos;

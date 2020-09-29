@@ -323,7 +323,7 @@ public:
   _TyUnfinishedNodeArrayEl *  m_punCur;
 
   // comparison object for sort:
-  typedef less< _TyUnfinishedNodeArrayEl >    _TyCompareVisitedTime;
+  typedef greater< _TyUnfinishedNodeArrayEl >    _TyCompareVisitedTime;
 
   // Notification callbacks:
   // The way it works is this ( no reason for it necessarily to be this way - but
