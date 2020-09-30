@@ -864,7 +864,7 @@ protected:
         _ClearVisitedLinks();
       }
     }
-    else
+    else // if ( m_contexts.empty() )...
     {
       // We have contexts left in this direction:
       t_TyGraphLinkBase * pglbContext = m_contexts.front();
@@ -945,6 +945,7 @@ _graph_fwd_iter_base< t_TyGraphNodeBase, t_TyGraphLinkBase,
 {
   if ( !m_fInitialized )
   {
+    // REVIEW: <dbien>: Calling _Next() on an uninitialized iterator causes initialization and then moving to the next element...
     if ( _TyBase::m_pgnbCur || _TyBase::m_pglbCur )
     {
       _Init();
@@ -1203,7 +1204,7 @@ _graph_fwd_iter_base< t_TyGraphNodeBase, t_TyGraphLinkBase,
       }
     }
   }
-  else
+  else // if ( _TyBase::PGLBCur() )...
   if ( _TyBase::PGNBCur() )
   {
     // Go to the first link from this node - if none then call _NextContext().
