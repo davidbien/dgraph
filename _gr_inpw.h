@@ -194,7 +194,7 @@ protected:
 
   void  _DestroySubGraph( _TyGraphNodeBaseBase * _pgnb )
   {
-    assert( _pgnb );
+    Assert( _pgnb );
     m_rg.destroy_node( static_cast< _TyGraphNode * >( _pgnb ) );
   }
 };

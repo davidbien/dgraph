@@ -30,7 +30,7 @@ public:
     // Insure that we got sent the innermost unknown:
     IUnknown  * punkDebug;
     __QI( _punk, punkDebug );
-    assert( _punk == punkDebug );
+    Assert( _punk == punkDebug );
     punkDebug->Release();
 #endif //!NDEBUG
     m_punk->AddRef();

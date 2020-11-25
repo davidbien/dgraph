@@ -126,7 +126,7 @@ public:
       m_ros( _ros ),
       m_iContextsOutput( 0 )
   {
-    assert( &m_ros != &_r.m_ros );
+    Assert( &m_ros != &_r.m_ros );
   }
 #endif //0
 
@@ -175,7 +175,7 @@ public:
   {
     if ( _fDirectionDown != _TyBase::m_fDirectionDown )
     {
-      assert( !m_iContextsOutput );
+      Assert( !m_iContextsOutput );
       m_fNewUnfinished = false; // Clear any state.
       m_ros._SetDirection( _fDirectionDown );
       _TyBase::SetDirection( _fDirectionDown );
@@ -193,8 +193,8 @@ public:
     }
     else
     {
-      assert( _pglb );
-      assert( _pgnb );
+      Assert( _pglb );
+      Assert( _pgnb );
       // We merely re-write the link footer here - it has already been written in
       //  a default manner:
       if ( t_fUseSeek )
@@ -324,7 +324,7 @@ public:
           }
           else
           {
-            assert( 0 );  // Attempt to iterate beyond the end.
+            Assert( 0 );  // Attempt to iterate beyond the end.
           }
           return;
         }

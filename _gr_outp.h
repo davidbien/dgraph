@@ -46,7 +46,7 @@ template < class t_TyOutputStream, class t_TyWrite >
 void
 _RawWriteGraphEl( t_TyOutputStream & _ros, t_TyWrite const & _rel )
 { 
-  assert( 0 ); // Should specialize for each stream type.
+  Assert( 0 ); // Should specialize for each stream type.
 }
 
 // Tokens for the binary representation:
@@ -202,7 +202,7 @@ public:
   void _WriteDirectionChange( bool _fDirectionDown )
   {
     // We should always be up-to-date:
-    assert( !m_fSetDirection || ( m_fDirectionDown == !_fDirectionDown ) );
+    Assert( !m_fSetDirection || ( m_fDirectionDown == !_fDirectionDown ) );
     if ( m_fOutputOn )
     {
       __THROWPT( e_ttFileOutput );

@@ -469,7 +469,7 @@ public:
   // This should only before the iteration is begun:
   void  SetDirection( bool _fDirectionDown )
   {
-    assert( FAtBegin() );
+    Assert( FAtBegin() );
     m_fInitialized = false;
     _TyBase::m_fDirectionDown = _fDirectionDown;
     _Init();
@@ -573,9 +573,9 @@ protected:
   // Initialize the iteration.
   void  _Init()
   {
-    assert( _TyBase::PGNBCur() );  // TODO: Allow initialization with a node OR a link - this would
-    assert( !_TyBase::PGLBCur() ); //  start the iteration at that link.
-    assert( !m_fInitialized );  // Should currently be uninitialized.
+    Assert( _TyBase::PGNBCur() );  // TODO: Allow initialization with a node OR a link - this would
+    Assert( !_TyBase::PGLBCur() ); //  start the iteration at that link.
+    Assert( !m_fInitialized );  // Should currently be uninitialized.
 
     // Ensure have no state before adding any:
     _ClearState();
@@ -629,9 +629,9 @@ protected:
   void  _CopyNodeArray( _TyThis const & _r )
   {
     __THROWPT( e_ttMemory );
-    assert( !m_punStart );  // for throw safety.
+    Assert( !m_punStart );  // for throw safety.
     typename _TyUnfinishedArrayAllocator::size_type stN = _r.m_punEnd - _r.m_punStart;
-    assert( stN );
+    Assert( stN );
     _TyBase::allocate_n( m_punStart, stN );// throws.
     m_punEnd = m_punStart + stN;
     m_punCur = m_punStart + ( _r.m_punCur - _r.m_punStart );
@@ -691,7 +691,7 @@ protected:
     {
       pib = m_linksVisitedDown.insert( _pglb );
     }
-    assert( pib.second );
+    Assert( pib.second );
     return pib.first;
   }
   void  _RemoveLink( _TyVLIter const & _rit ) _BIEN_NOTHROW
@@ -803,7 +803,7 @@ protected:
           //  from this node - then increment {m_punCur}:
           t_TyGraphLinkBase * pglbUnvisited = 
             _PGLBFindUnvisitedLink( *( m_punCur->m_pgnbUnfinished->PPGLBRelationHead( _TyBase::m_fDirectionDown ) ) );
-          assert( pglbUnvisited );  // Otherwise why is this node in the unfinished array.
+          Assert( pglbUnvisited );  // Otherwise why is this node in the unfinished array.
           _TyBase::SetPGNBCur( m_punCur->m_pgnbUnfinished );
           _TyBase::SetPGLBCur( pglbUnvisited );
           m_punCur++; // We could clear the unfinished array at this point if we were at the end - 
@@ -814,7 +814,7 @@ protected:
         }
       }
 
-      assert( !m_punStart );
+      Assert( !m_punStart );
       
       // If we are doing a closed-directed iteration then we are done.
       // Otherwise check the hash for unfinished nodes:
@@ -868,7 +868,7 @@ protected:
     {
       // We have contexts left in this direction:
       t_TyGraphLinkBase * pglbContext = m_contexts.front();
-      assert( pglbContext );
+      Assert( pglbContext );
       _TyBase::SetPGLBCur( pglbContext );
       _TyBase::SetPGNBCur( pglbContext->PGNBRelation( !_TyBase::m_fDirectionDown ) );
       m_contexts.pop_front();
@@ -879,8 +879,8 @@ protected:
   void
   _ProcessUnfinishedNodes()
   {
-    assert( !m_punStart );
-    assert( m_nodesUnfinished.size() > ( m_fNodeToBeRemoved ? 1 : 0 ) );
+    Assert( !m_punStart );
+    Assert( m_nodesUnfinished.size() > ( m_fNodeToBeRemoved ? 1 : 0 ) );
 
     // We have nodes in the opposite direction to process - they are in {m_nodesUnfinished}.
     // Allocate an array of _TyUnfinishedNodeArrayEl objects and fill with the hash - then
@@ -925,7 +925,7 @@ protected:
     // Now find an unvisited link on this node:
     t_TyGraphLinkBase * pglbUnvisited = 
       _PGLBFindUnvisitedLink( *( m_punStart->m_pgnbUnfinished->PPGLBRelationHead( _TyBase::m_fDirectionDown ) ) );
-    assert( pglbUnvisited );  // Otherwise why is this node in the unfinished array.
+    Assert( pglbUnvisited );  // Otherwise why is this node in the unfinished array.
     _TyBase::SetPGNBCur( m_punStart->m_pgnbUnfinished );
     _TyBase::SetPGLBCur( pglbUnvisited );
   }
@@ -952,7 +952,7 @@ _graph_fwd_iter_base< t_TyGraphNodeBase, t_TyGraphLinkBase,
     }
     else
     {
-      assert( 0 );  // We are at the end ( and have never been initialized ).
+      Assert( 0 );  // We are at the end ( and have never been initialized ).
       return;
     }
   }
@@ -1001,7 +1001,7 @@ _graph_fwd_iter_base< t_TyGraphNodeBase, t_TyGraphLinkBase,
         }
         else
         {
-          assert( pgnbNextNode != m_pgnbIterationRoot );
+          Assert( pgnbNextNode != m_pgnbIterationRoot );
 
           int iFound = 0;
           do
@@ -1020,7 +1020,7 @@ _graph_fwd_iter_base< t_TyGraphNodeBase, t_TyGraphLinkBase,
             _TyUNValType vtUnfinished( pgnbNextNode, _TyUnfinishedNodeHashEl() );
             vtUnfinished.second.m_iRemainingLinks = iFound-1;
             pibUnfinished = _PIBInsertNode( vtUnfinished );
-            assert( pibUnfinished.second );
+            Assert( pibUnfinished.second );
           }
         }
       }
@@ -1070,7 +1070,7 @@ _graph_fwd_iter_base< t_TyGraphNodeBase, t_TyGraphLinkBase,
             }
             _BIEN_UNWIND( _RemoveNode( pibUnfinished.first ) ); // Restore state and re-throw.
           }
-          assert( pvtUN->second.m_iRemainingLinks );
+          Assert( pvtUN->second.m_iRemainingLinks );
         }
         else
         {
@@ -1101,7 +1101,7 @@ _graph_fwd_iter_base< t_TyGraphNodeBase, t_TyGraphLinkBase,
             if ( pibUnfinished.second )
             {
               m_iCurVisitOrder--; // We incremented this above.
-              assert( pibUnfinished.first->second.m_iVisitOrder == m_iCurVisitOrder );
+              Assert( pibUnfinished.first->second.m_iVisitOrder == m_iCurVisitOrder );
               _RemoveNode( pibUnfinished.first );
             }
             else
@@ -1230,7 +1230,7 @@ _graph_fwd_iter_base< t_TyGraphNodeBase, t_TyGraphLinkBase,
   }
   else
   {
-    assert( 0 );  // Attempt to iterate beyond end().
+    Assert( 0 );  // Attempt to iterate beyond end().
   }
 }
 

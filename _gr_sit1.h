@@ -44,7 +44,7 @@ protected:
 	void	_Reference( _TyGraphNodeBase * _pgnbCur )
 	{
 		// m_pgclNode may contain garbage - only valid when !!PGNSCur().
-		assert( !PGNSCur() );		// In case of throw - should always have valid or NULL value.
+		Assert( !PGNSCur() );		// In case of throw - should always have valid or NULL value.
 		_TyAllocConnLinkBase::allocate_type( m_pgclNode );
 		m_pgnbCur = _pgnbCur;		// No throw after this.
 		m_pgclNode->m_pvConnection = (void*)this;
@@ -66,8 +66,8 @@ protected:
 	// We don't need to unlink the connection link.
 	void	_node_deinit() __STLP_NOTHROW
 	{
-		assert( PGNBCur() );
-		assert( m_pgclNode );
+		Assert( PGNBCur() );
+		Assert( m_pgclNode );
 		_TyIterBase::Clear();
 		_TyAllocConnLinkBase::deallocate_type( m_pgclNode );
 		__DEBUG_STMT( m_pgclNode = (_TyGraphConnectionLink*)0xbaadf0ad );
@@ -204,8 +204,8 @@ public:
 	// Set to value of passed non-NULL node - assume currently populated link - won't throw.
 	void			SetPGNBCur_Populated( t_TyGraphNodeBase * _pgnb ) __STLP_NOTHROW
 	{
-		assert( m_pgclNode );
-		assert( _pgnb );
+		Assert( m_pgclNode );
+		Assert( _pgnb );
 		m_pgclNode->remove_link();
 		(m_pgnbCur = _pgnb)->PushConnection( m_pgclNode );
 	}
@@ -224,8 +224,8 @@ public:
 
 	void					GoParent( _TyGNIndex _u ) __STLP_NOTHROW
 	{
-		assert( m_pgclNode );
-		assert( m_pgnbCur );
+		Assert( m_pgclNode );
+		Assert( m_pgnbCur );
 		// Remove the reference to the current node and re-use it to reference the
 		//	new node:
 		m_pgclNode->remove_link();
@@ -234,8 +234,8 @@ public:
 	}
 	void					GoChild( _TyGNIndex _u ) __STLP_NOTHROW
 	{
-		assert( m_pgclNode );
-		assert( m_pgnbCur );
+		Assert( m_pgclNode );
+		Assert( m_pgnbCur );
 		// Remove the reference to the current node and re-use it to reference the
 		//	new node:
 		m_pgclNode->remove_link();
@@ -308,7 +308,7 @@ protected:
 
 	void	_Reference( _TyGraphLinkBase ** _ppglbCur )
 	{
-		assert( !PPGLBCur() );
+		Assert( !PPGLBCur() );
 
 		_InitRef();
 
@@ -331,13 +331,13 @@ protected:
 	// We don't need to unlink the connection link.
 	void	_node_deinit() __STLP_NOTHROW
 	{
-		assert( PPGLBCur() );
-		assert( m_pgclObj );
+		Assert( PPGLBCur() );
+		Assert( m_pgclObj );
 #ifndef NDEBUG
 		t_TyGraphLinkSafe *	_pgls;
 		t_TyGraphNodeSafe *	_pgns;
 		t_TyGraphLinkSafe::PGrObjFromPPGLB( PPGLBCur(), _pgls, _pgns );
-		assert( !_pgls && _pgns );	// We should currently be at the head of a relation list.
+		Assert( !_pgls && _pgns );	// We should currently be at the head of a relation list.
 #endif //!NDEBUG
 		
 		_TyIterBase::Clear();
@@ -349,13 +349,13 @@ protected:
 	// We don't need to unlink the connection link.
 	void	_link_deinit() __STLP_NOTHROW
 	{
-		assert( PPGLBCur() );
-		assert( m_pgclObj );
+		Assert( PPGLBCur() );
+		Assert( m_pgclObj );
 #ifndef NDEBUG
 		t_TyGraphLinkSafe *	_pgls;
 		t_TyGraphNodeSafe *	_pgns;
 		t_TyGraphLinkSafe::PGrObjFromPPGLB( PPGLBCur(), _pgls, _pgns );
-		assert( _pgls );	// We should currently not be at the head of a relation list.
+		Assert( _pgls );	// We should currently not be at the head of a relation list.
 #endif //!NDEBUG
 		
 		_TyIterBase::Clear();
@@ -467,7 +467,7 @@ public:
 	// Set a non-NULL <_pglbCur> into an iterator:
 	void		SetPGLBCur_Populated( _TyGraphLinkBase ** _ppglbCur )
 	{	
-		assert( _ppglbCur );
+		Assert( _ppglbCur );
 		if ( PPGLBCur() )
 		{
 			m_pgclObj->remove_link();
@@ -483,8 +483,8 @@ public:
 	// Set a non-NULL <_pglbCur> into a populated iterator:
 	void		SetPGLBCur_Populated( const _TyGraphLinkBase ** _ppglbCur )
 	{	
-		assert( PPGLBCur() );
-		assert( _ppglbCur );
+		Assert( PPGLBCur() );
+		Assert( _ppglbCur );
 		m_pgclObj->remove_link();
 		m_ppglbCur = _ppglbCur;
 		_PushConnection( m_ppglbCur );
@@ -513,7 +513,7 @@ public:
 		}
 		else
 		{
-			assert( 0 );	// This is not supported - my feeling is that this is not 
+			Assert( 0 );	// This is not supported - my feeling is that this is not 
 		}
 	}
 
@@ -537,7 +537,7 @@ public:
 		}
 		else
 		{
-			assert( 0 );	// This is not supported - my feeling is that this is not 
+			Assert( 0 );	// This is not supported - my feeling is that this is not 
 		}
 	}
 	void					GoRelation( bool _fChild, _TyGNIndex _u ) __STLP_NOTHROW
@@ -633,41 +633,41 @@ public:
 	template < class t_TyLinkIterator >
 	void	ExchangeSiblingParents( t_TyLinkIterator const & _rSiblingParent ) const __STLP_NOTHROW
 	{
-		assert( PGLBCur() != _rSiblingParent.PGLBCur() );
-		assert( PGLBCur()->m_pgnbNodeChild == _rSiblingParent.PGLBCur()->m_pgnbNodeChild );
+		Assert( PGLBCur() != _rSiblingParent.PGLBCur() );
+		Assert( PGLBCur()->m_pgnbNodeChild == _rSiblingParent.PGLBCur()->m_pgnbNodeChild );
 		_TyGraphLinkBase::ExchangeParents( PGLBCur(), _rSiblingParent.PGLBCur() );
 	}
 	template < class t_TyLinkIterator >
 	void	ExchangeSiblingChildren( t_TyLinkIterator const & _rSiblingChild ) const __STLP_NOTHROW
 	{
-		assert( _rSiblingChild.PGLBCur() != PGLBCur() );
-		assert( PGLBCur()->m_pgnbNodeChild == _rSiblingChild.PGLBCur()->m_pgnbNodeChild );
+		Assert( _rSiblingChild.PGLBCur() != PGLBCur() );
+		Assert( PGLBCur()->m_pgnbNodeChild == _rSiblingChild.PGLBCur()->m_pgnbNodeChild );
 		_TyGraphLinkBase::ExchangeChildren( PGLBCur(), _rSiblingChild.PGLBCur() );
 	}
 #else //_STLP_MEMBER_TEMPLATES
 	void	ExchangeSiblingParents( _TyThis const & _rSiblingParent ) const __STLP_NOTHROW
 	{
-		assert( &_rSiblingParent != this );
-		assert( PGLBCur()->m_pgnbNodeChild == _rSiblingParent.PGLBCur()->m_pgnbNodeChild );
+		Assert( &_rSiblingParent != this );
+		Assert( PGLBCur()->m_pgnbNodeChild == _rSiblingParent.PGLBCur()->m_pgnbNodeChild );
 		_TyGraphLinkBase::ExchangeParents( PGLBCur(), _rSiblingParent.PGLBCur() );
 	}
 	void	ExchangeSiblingChildren( _TyThis const & _rSiblingChild ) const __STLP_NOTHROW
 	{
-		assert( &_rSiblingChild != this );
-		assert( PGLBCur()->m_pgnbNodeChild == _rSiblingChild.PGLBCur()->m_pgnbNodeChild );
+		Assert( &_rSiblingChild != this );
+		Assert( PGLBCur()->m_pgnbNodeChild == _rSiblingChild.PGLBCur()->m_pgnbNodeChild );
 		_TyGraphLinkBase::ExchangeChildren( PGLBCur(), _rSiblingChild.PGLBCur() );
 	}
 
 	void	ExchangeSiblingParents( _TyLinkIdentIter const & _rlpiSiblingParent ) const __STLP_NOTHROW
 	{
-		assert( &_rSiblingParent != this );
-		assert( PGLBCur()->m_pgnbNodeChild == _rSiblingParent.PGLBCur()->m_pgnbNodeChild );
+		Assert( &_rSiblingParent != this );
+		Assert( PGLBCur()->m_pgnbNodeChild == _rSiblingParent.PGLBCur()->m_pgnbNodeChild );
 		_TyGraphLinkBase::ExchangeParents( PGLBCur(), _rSiblingParent.PGLBCur() );
 	}
 	void	ExchangeSiblingChildren( _TyLinkIdentIter const & _rlpiSiblingChild ) const __STLP_NOTHROW
 	{
-		assert( &_rSiblingChild != this );
-		assert( PGLBCur()->m_pgnbNodeChild == _rSiblingChild.PGLBCur()->m_pgnbNodeChild );
+		Assert( &_rSiblingChild != this );
+		Assert( PGLBCur()->m_pgnbNodeChild == _rSiblingChild.PGLBCur()->m_pgnbNodeChild );
 		_TyGraphLinkBase::ExchangeChildren( PGLBCur(), _rSiblingChild.PGLBCur() );
 	}
 #endif //_STLP_MEMBER_TEMPLATES
@@ -722,7 +722,7 @@ protected:
 	void	_Reference( _TyGraphLinkBase * _pglbCur )
 	{
 		// m_pgclLink may contain garbage - only valid when !!PGNSCur().
-		assert( !PGLSCur() );		// In case of throw - should always have valid or NULL value.
+		Assert( !PGLSCur() );		// In case of throw - should always have valid or NULL value.
 		_TyAllocConnLinkBase::allocate_type( m_pgclLink );
 		m_pglbCur = _pglbCur;		// No throw after this.
 		m_pgclLink->m_ppvConnection = (void*)this;
@@ -743,8 +743,8 @@ protected:
 	// We don't need to unlink the connection link.
 	void	_link_deinit() __STLP_NOTHROW
 	{
-		assert( PGLBCur() );
-		assert( m_pgclLink );
+		Assert( PGLBCur() );
+		Assert( m_pgclLink );
 
 		_TyIterBase::Clear();
 		_TyAllocConnLinkBase::deallocate_type( m_pgclLink );
@@ -847,8 +847,8 @@ public:
 	// Set a non-NULL <_pglbCur> into a populated iterator:
 	void		SetPGLBCur_Populated( _TyGraphLinkBase * _pglbCur ) __STLP_NOTHROW
 	{	
-		assert( PGLSCur() );
-		assert( _pglbCur );
+		Assert( PGLSCur() );
+		Assert( _pglbCur );
 		m_pgclLink->remove_link();
 		m_pglbCur = _pglbCur;
 		PGLSCur()->PushConnection( m_pgclLink );
@@ -1067,7 +1067,7 @@ protected:
 				}
 #endif //!_BIEN_USE_EXCEPTIONS
 				new ( _ppnsNew ) t_TyPathNodeSafe( *_ppnbAppend );
-				assert( !_ppnsNew->m_pglbLink );
+				Assert( !_ppnsNew->m_pglbLink );
 
 				_CreateConnLink( _pgclNode, _ppnsNew );
 #ifndef _BIEN_USE_EXCEPTIONS
@@ -1087,8 +1087,8 @@ protected:
 			// If we had an old tail then update by removing now - for throw-safety:
 			if ( _ppnbTailOld )
 			{
-				assert( !_ppnbTailOld->m_pglbLink );
-				assert( _ppnbTailOld->m_pgnbNode == _ppnbTailOld->m_ppnbNext->m_pgnbNode );	// Paths must connect.
+				Assert( !_ppnbTailOld->m_pglbLink );
+				Assert( _ppnbTailOld->m_pgnbNode == _ppnbTailOld->m_ppnbNext->m_pgnbNode );	// Paths must connect.
 				_ppnbTailOld->remove_node_in_middle();
 				_DestroyConnLink( _ppnbTailOld->m_pgclNode );
 				_TyBaseAllocPathNode::deallocate_type( _ppnbTailOld );
@@ -1175,15 +1175,15 @@ protected:
 					_pglbNext = _ppnbAppend->m_pglbLink;
 					__SDP_TRANSFER(_ppnsNew)->insert_node_in_middle( *_pppnbTailOld );
 				}
-				assert( !_pglbNext );
+				Assert( !_pglbNext );
 			}
 			_BIEN_UNWIND( _DestroyPath( _pppnbTailOld ) )
 
 			// We succeeded - if we had an old tail then remove it now:
 			if ( _ppnbTailOld )
 			{
-				assert( !_ppnbTailOld->m_pglbLink );
-				assert( _ppnbTailOld->m_pgnbNode == _ppnbTailOld->m_ppnbNext->m_pgnbNode );	// Paths must connect.
+				Assert( !_ppnbTailOld->m_pglbLink );
+				Assert( _ppnbTailOld->m_pgnbNode == _ppnbTailOld->m_ppnbNext->m_pgnbNode );	// Paths must connect.
 				_ppnbTailOld->remove_node_in_middle();
 				_DestroyConnLink( _ppnbTailOld->m_pgclNode );
 				_TyBaseAllocPathNode::deallocate_type( _ppnbTailOld );
@@ -1329,8 +1329,8 @@ protected:
 			}
 			else
 			{
-				assert( !static_cast< t_TyPathNodeSafe & >( **_pppnbCopyFrom ).m_pglbLink );
-				assert( !_rpnsCopyTo.m_pglbLink );
+				Assert( !static_cast< t_TyPathNodeSafe & >( **_pppnbCopyFrom ).m_pglbLink );
+				Assert( !_rpnsCopyTo.m_pglbLink );
 			}
 		}
 
@@ -1397,7 +1397,7 @@ protected:
 
 	void	_AppendNode( _TyGraphNodeBase * _pgnb, _TyGraphLinkBase * _pglb )
 	{
-		assert( !m_uCount );
+		Assert( !m_uCount );
 		__SDP( t_TyPathNodeSafe, _TyPathNodeSafeAllocator, GetPNSAllocator(), _ppnsAlloc );
 		_TyBaseAllocPathNode::allocate_type( _ppnsAlloc );
 		__SDP_CHECK_VOID( _ppnsAlloc );
@@ -1434,7 +1434,7 @@ protected:
 
 	void	_AppendLinkPosIter( _TyGraphLinkPosIter const & _r )
 	{
-		assert( !m_uCount );
+		Assert( !m_uCount );
 		_TyPathNodeBase ** _pppnbOldTail = m_pppnbTail;
 		_TyGNIndex _uOldCount;
 		_BIEN_TRY
@@ -1483,7 +1483,7 @@ protected:
 			_DestroyConnLink( _ppnsDestroy->m_pgclNode );
 			if ( _ppnsDestroy->m_pglbLink )
 			{
-				assert( _ppnsDestroy->m_pgclLink );
+				Assert( _ppnsDestroy->m_pgclLink );
 				_DestroyConnLink( _ppnsDestroy->m_pgclLink );
 			}
 
@@ -1493,7 +1493,7 @@ protected:
 		// If the new tail has a pointer to a link then rid it:
 		if ( *m_pppnbTail && (*m_pppnbTail)->m_pglbLink )
 		{
-			assert( (*m_pppnbTail)->m_pgclLink );
+			Assert( (*m_pppnbTail)->m_pgclLink );
 			_DestroyConnLink( (*m_pppnbTail)->m_pgclLink );
 			// (*m_pppnbTail)->m_pgclLink = 0;	- no need to zero - set to debug value.
 			__DEBUG_STMT( (*m_pppnbTail)->m_pgclLink = (_TyGraphConnectionLink*)0xbaaddeed );
@@ -1506,7 +1506,7 @@ protected:
 	void	_node_deinit( _TyGraphConnectionLink * _pgclNode ) __STLP_NOTHROW
 	{
 		t_TyPathNodeSafe *	_ppnsDeinit = static_cast< t_TyPathNodeSafe * >( _pgclNode->m_pvConnection );
-		assert( _ppnsDeinit->m_pgclNode == _pgclNode );
+		Assert( _ppnsDeinit->m_pgclNode == _pgclNode );
 		_ppnsDeinit->m_pgnbNode = 0;
 		_TyAllocConnLinkBase::deallocate_type( _pgclNode );
 		__DEBUG_STMT( _ppnsDeinit->m_pgclNode = 0xbaadfeed );	// no need to zero after zeroing the node.
@@ -1517,7 +1517,7 @@ protected:
 	void	_link_deinit( _TyGraphConnectionLink * _pgclLink ) __STLP_NOTHROW
 	{
 		t_TyPathNodeSafe *	_ppnsDeinit = static_cast< t_TyPathNodeSafe * >( _pgclLink->m_pvConnection );
-		assert( _ppnsDeinit->m_pgclLink == _pgclLink );
+		Assert( _ppnsDeinit->m_pgclLink == _pgclLink );
 		_ppnsDeinit->m_pglbLink = 0;
 		_TyAllocConnLinkBase::deallocate_type( _pgclLink );
 		__DEBUG_STMT( _ppnsDeinit->m_pgclNode = 0xbaadfead );	// no need to zero after zeroing the node.

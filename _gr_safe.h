@@ -161,7 +161,7 @@ public:
   static void AssertValidPT( const _TyPositionType & _rpt ) _BIEN_NOTHROW
   {
     // should be no garbage:
-    assert( !( _rpt & ~( s_egptHeadPosition | s_egptParentPosition ) ) );
+    Assert( !( _rpt & ~( s_egptHeadPosition | s_egptParentPosition ) ) );
   }
 
   // Return the pointer to the appropriate graph object from the address of the next pointer:
@@ -169,14 +169,14 @@ public:
                                 _TyGraphLinkSafe *& _pgls, 
                                 _TyGraphNodeSafe *& _pgns ) _BIEN_NOTHROW
   {
-    // Structs must be set up appropriately - may need to push some packing pragmas if these assert(s) fail.
+    // Structs must be set up appropriately - may need to push some packing pragmas if these Assert(s) fail.
 #ifdef __GNUC__
 	#pragma GCC diagnostic push	
 	#pragma GCC diagnostic ignored "-Winvalid-offsetof"
 #endif //__GNUC__
-    assert( offsetof(_TyGraphLinkSafe,m_ptNextParentType)-offsetof(_TyGraphLinkBase,m_pglbNextParent) ==
+    Assert( offsetof(_TyGraphLinkSafe,m_ptNextParentType)-offsetof(_TyGraphLinkBase,m_pglbNextParent) ==
             offsetof(_TyGraphNodeSafe,m_ptNextParentType)-offsetof(_TyGraphNodeBase,m_pglbParents) );
-    assert( offsetof(_TyGraphLinkSafe,m_ptNextChildType)-offsetof(_TyGraphLinkBase,m_pglbNextChild) ==
+    Assert( offsetof(_TyGraphLinkSafe,m_ptNextChildType)-offsetof(_TyGraphLinkBase,m_pglbNextChild) ==
             offsetof(_TyGraphNodeSafe,m_ptNextChildType)-offsetof(_TyGraphNodeBase,m_pglbChildren) );
 #ifdef __GNUC__
 	#pragma GCC diagnostic pop
@@ -219,7 +219,7 @@ public:
 class _graph_node_safe_base : public _graph_node_base
 {
 #ifndef NDEBUG
-  // Needs access to assert.
+  // Needs access to Assert.
   template < class t__TyGraphNodeSafe >
   friend class _graph_link_safe_base;
 #endif //!NDEBUG
@@ -440,14 +440,14 @@ public:
     _TyBaseGraph( static_cast< typename t_TyGraphSafe::_TyGraphBaseBase const & >( _r ) ),
     _TyBaseAllocPathNodeSafe( _r.get_safe_path_allocator() )
   {
-    assert( 0 );// REVIEW:Do we ever get here ?
+    Assert( 0 );// REVIEW:Do we ever get here ?
     _init();
   }
 
   ~_graph_safe_base()
   {
     // Due to derived class, we should never have a root node here:
-    assert( !_GetRootNode() );
+    Assert( !_GetRootNode() );
   }
 
   // Allocation stuff:
@@ -552,7 +552,7 @@ protected:
         case s_egclGraph:
         {
           _TyThis * pg = static_cast< _TyThis * >( pgclCur->m_pvConnection );
-          assert( pg->_GetRootNode() == _pgnbDeinit );
+          Assert( pg->_GetRootNode() == _pgnbDeinit );
           pg->_node_deinit();
         }
         break;
@@ -562,7 +562,7 @@ protected:
           // node iterator:
           _TyGraphNodeIterBaseSafe *  pni = 
             static_cast< _TyGraphNodeIterBaseSafe* >( pgclCur->m_pvConnection );
-          assert( pni->PGNBCur() == _pgnbDeinit );
+          Assert( pni->PGNBCur() == _pgnbDeinit );
           pni->_node_deinit();
         }
         break;
@@ -580,7 +580,7 @@ protected:
         {
           t_TyPathNodeSafe *  ppns = 
             static_cast< t_TyPathNodeSafe* >( pgclCur->m_pvConnection );
-          //assert( ppns->PGNB() == static_cast< _TyGraphNodeBaseBase* >( _pgnbDeinit ) );
+          //Assert( ppns->PGNB() == static_cast< _TyGraphNodeBaseBase* >( _pgnbDeinit ) );
           ppns->_node_deinit();
         }
         break;
@@ -597,7 +597,7 @@ protected:
 
         default:
         {
-          assert( 0 );
+          Assert( 0 );
         }
         break;
       }
@@ -655,7 +655,7 @@ protected:
 
         default:
         {
-          assert( 0 );
+          Assert( 0 );
         }
         break;
       }

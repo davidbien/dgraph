@@ -60,7 +60,7 @@ public:
   }
   void  _Disconnect()
   {
-    assert( m_psos );
+    Assert( m_psos );
     m_gcl.remove_link();
     m_psos = 0;
   }

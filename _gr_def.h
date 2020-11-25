@@ -16,7 +16,7 @@
 #define __GR_THROWGRAPHNAVERRORS
 #endif
 
-#include <assert.h>
+#include <_assert.h>
 
 #ifdef __GR_THROWGRAPHNAVERRORS
 // We use the SGI exception stuff:
@@ -272,7 +272,7 @@ public:
   //  lists to nodes enmass:
   void      AppendParentListToTail( _TyThis ** _ppglbTail ) _BIEN_NOTHROW
   {
-    assert( !*_ppglbTail ); // Must be tail.
+    Assert( !*_ppglbTail ); // Must be tail.
     m_ppglbPrevNextParent = _ppglbTail;
     *_ppglbTail = this;
   }
@@ -301,7 +301,7 @@ public:
   {
     if ( !_pglbParentBefore || !_pglbParentAfter )
       throw _graph_nav_except("_graph_link_base::ExchangeParentsOrdered(): bad parameters.");
-    assert( _pglbParentBefore != _pglbParentAfter );  // not a nop.
+    Assert( _pglbParentBefore != _pglbParentAfter );  // not a nop.
     _TyThis ** ppglbPrevNextAfter = _pglbParentAfter->m_ppglbPrevNextParent;
     _pglbParentAfter->m_ppglbPrevNextParent = _pglbParentBefore->m_ppglbPrevNextParent;
     _pglbParentBefore->m_ppglbPrevNextParent = ppglbPrevNextAfter;
@@ -320,7 +320,7 @@ public:
   {
     if ( !_pglbParentBefore || !_pglbParentAfter )
       throw _graph_nav_except("_graph_link_base::ExchangeParentsOrdered(): bad parameters.");
-    assert( _pglbParentBefore != _pglbParentAfter );  // not a nop.
+    Assert( _pglbParentBefore != _pglbParentAfter );  // not a nop.
     _TyThis ** ppglbPrevNextAfter = _pglbParentAfter->m_ppglbPrevNextParent;
     _pglbParentAfter->m_ppglbPrevNextParent = _pglbParentBefore->m_ppglbPrevNextParent;
     _pglbParentBefore->m_ppglbPrevNextParent = ppglbPrevNextAfter;
@@ -418,7 +418,7 @@ public:
   //  lists to nodes enmass:
   void      AppendChildListToTail( _TyThis ** _ppglbTail ) _BIEN_NOTHROW
   {
-    assert( !*_ppglbTail ); // Must be tail.
+    Assert( !*_ppglbTail ); // Must be tail.
     m_ppglbPrevNextChild = _ppglbTail;
     *_ppglbTail = this;
   }
@@ -478,7 +478,7 @@ public:
   static void   ExchangeChildrenOrdered(  _TyThis * _pglbChildBefore, 
                                           _TyThis * _pglbChildAfter ) _BIEN_NOTHROW
   {
-    assert( _pglbChildBefore != _pglbChildAfter );  // not a nop.
+    Assert( _pglbChildBefore != _pglbChildAfter );  // not a nop.
     _TyThis ** ppglbPrevNextAfter = _pglbChildAfter->m_ppglbPrevNextChild;
     _pglbChildAfter->m_ppglbPrevNextChild = _pglbChildBefore->m_ppglbPrevNextChild;
     _pglbChildBefore->m_ppglbPrevNextChild = ppglbPrevNextAfter;
@@ -495,7 +495,7 @@ public:
   static void   ExchangeChildren( _TyThis * _pglbChildBefore, 
                                   _TyThis * _pglbChildAfter ) _BIEN_NOTHROW
   {
-    assert( _pglbChildBefore != _pglbChildAfter );  // not a nop.
+    Assert( _pglbChildBefore != _pglbChildAfter );  // not a nop.
     _TyThis ** ppglbPrevNextAfter = _pglbChildAfter->m_ppglbPrevNextChild;
     _pglbChildAfter->m_ppglbPrevNextChild = _pglbChildBefore->m_ppglbPrevNextChild;
     _pglbChildBefore->m_ppglbPrevNextChild = ppglbPrevNextAfter;
@@ -579,17 +579,17 @@ public:
   }
   void  ExchangeParentsOrdered( _TyGNIndex _uMin, _TyGNIndex _uMax ) const _BIEN_NOTHROW
   {
-    assert( _uMin < _uMax );
-    assert( _uMin < UParents() );
-    assert( _uMax < UParents() );
+    Assert( _uMin < _uMax );
+    Assert( _uMin < UParents() );
+    Assert( _uMax < UParents() );
     _TyGraphLinkBase * const * _ppglbMin = _TyGraphLinkBase::PPGLBGetNthParent( &m_pglbParents, _uMin );
     _TyGraphLinkBase * const * _ppglbMax = _TyGraphLinkBase::PPGLBGetNthParent( _ppglbMin, _uMax - _uMin );
     _TyGraphLinkBase::ExchangeParentsOrdered( *_ppglbMin, *_ppglbMax );
   }
   void  MoveParentUp( _TyGNIndex _uRemove, _TyGNIndex _uInsert )
   {
-    assert( _uRemove < _uInsert );
-    assert( _uRemove < UParents()-1 );  // no-op otherwise.
+    Assert( _uRemove < _uInsert );
+    Assert( _uRemove < UParents()-1 );  // no-op otherwise.
     _TyGraphLinkBase ** _ppglbRemove = 
       _TyGraphLinkBase::PPGLBGetNthParent( &m_pglbParents, _uRemove );
     _TyGraphLinkBase ** _ppglbInsert = 
@@ -606,7 +606,7 @@ public:
   }
   void  MoveParentDown( _TyGNIndex _uRemove, _TyGNIndex _uInsert )
   {
-    assert( _uInsert < _uRemove );
+    Assert( _uInsert < _uRemove );
     _TyGraphLinkBase ** _ppglbInsert = _TyGraphLinkBase::PPGLBGetNthParent( &m_pglbParents, _uRemove );
     _TyGraphLinkBase ** _ppglbRemove = _TyGraphLinkBase::PPGLBGetNthParent( _ppglbInsert, _uRemove - _uInsert );
     if ( *_ppglbRemove )
@@ -634,7 +634,7 @@ public:
                           _TyThis ** _ppgnbRemoved,
                           _TyGraphLinkBase ** _ppglRemoved ) const
   {
-    assert( _uRemove < UParents() );
+    Assert( _uRemove < UParents() );
     *_ppglRemoved = *_TyGraphLinkBase::PPGLBGetNthParent( &m_pglbParents, _uRemove );
     if ( *_ppglRemoved )
     {
@@ -689,17 +689,17 @@ public:
   }
   void  ExchangeChildren( _TyGNIndex _uMin, _TyGNIndex _uMax ) _BIEN_NOTHROW
   {
-    assert( _uMin < _uMax );
-    assert( _uMin < UChildren() );
-    assert( _uMax < UChildren() );
+    Assert( _uMin < _uMax );
+    Assert( _uMin < UChildren() );
+    Assert( _uMax < UChildren() );
     _TyGraphLinkBase ** _ppglbMin = _TyGraphLinkBase::PPGLBGetNthChild( &m_pglbChildren, _uMin );
     _TyGraphLinkBase ** _ppglbMax = _TyGraphLinkBase::PPGLBGetNthChild( _ppglbMin, _uMax - _uMin );
     _TyGraphLinkBase::ExchangeChildrenOrdered( *_ppglbMin, *_ppglbMax );
   }
   void  MoveChildUp( _TyGNIndex _uRemove, _TyGNIndex _uInsert )
   {
-    assert( _uRemove < _uInsert );
-    assert( _uRemove < UChildren()-1 ); // no-op otherwise.
+    Assert( _uRemove < _uInsert );
+    Assert( _uRemove < UChildren()-1 ); // no-op otherwise.
     _TyGraphLinkBase ** _ppglbRemove = _TyGraphLinkBase::PPGLBGetNthChild( &m_pglbChildren, _uRemove );
     _TyGraphLinkBase ** _ppglbInsert = _TyGraphLinkBase::PPGLBGetNthChild( _ppglbRemove, _uInsert - _uRemove );
     if ( *_ppglbRemove )
@@ -714,7 +714,7 @@ public:
   }
   void  MoveChildDown( _TyGNIndex _uRemove, _TyGNIndex _uInsert )
   {
-    assert( _uInsert < _uRemove );
+    Assert( _uInsert < _uRemove );
     _TyGraphLinkBase ** _ppglbInsert = _TyGraphLinkBase::PPGLBGetNthChild( &m_pglbChildren, _uRemove );
     _TyGraphLinkBase ** _ppglbRemove = _TyGraphLinkBase::PPGLBGetNthChild( _ppglbInsert, _uRemove - _uInsert );
     if ( *_ppglbRemove )
@@ -742,7 +742,7 @@ public:
                           _TyThis ** _ppgnbRemoved,
                           _TyGraphLinkBase ** _ppglRemoved )
   {
-    assert( _uRemove < UChildren() );
+    Assert( _uRemove < UChildren() );
     *_ppglRemoved = *_TyGraphLinkBase::PPGLBGetNthChild( &m_pglbChildren, _uRemove );
     if ( *_ppglRemoved )
     {
@@ -889,7 +889,7 @@ public:
     }
     else
     {
-      assert( m_pppnbPrevNext == _rpppnbTail );
+      Assert( m_pppnbPrevNext == _rpppnbTail );
       _rpppnbTail = &m_ppnbNext;
     }
     _rpgnBefore = this;
@@ -898,7 +898,7 @@ public:
   // Insert into the middle of the list - assumes 
   void  insert_node_in_middle( _TyThis *& _rpgnBefore ) _BIEN_NOTHROW
   {
-    assert( _rpgnBefore );
+    Assert( _rpgnBefore );
     m_pppnbPrevNext = &_rpgnBefore;
     m_ppnbNext = _rpgnBefore;
     _rpgnBefore->m_pppnbPrevNext = &m_ppnbNext;

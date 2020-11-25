@@ -128,7 +128,7 @@ public:
   void _WriteDirectionChange( bool _fDirectionDown )
   {
     // We should always be up-to-date:
-    assert( !m_fSetDirection || ( m_fDirectionDown == !_fDirectionDown ) );
+    Assert( !m_fSetDirection || ( m_fDirectionDown == !_fDirectionDown ) );
 
     _WriteStateNumber();
     m_fWaitWriteStateNumber = true;

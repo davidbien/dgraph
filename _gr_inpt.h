@@ -454,7 +454,7 @@ protected:
   {
     // Set the direction to the opposite of what it is now,
     //  we may be constructing in reverse:
-    assert( ! m_fDirectionSet ||
+    Assert( ! m_fDirectionSet ||
             ( m_fConstructInReverse && ( _fDirectionDown == m_fDirectionDown ) ) ||
             ( !m_fConstructInReverse && ( _fDirectionDown == !m_fDirectionDown ) ) );
 
@@ -480,10 +480,10 @@ protected:
   void  _ProcessUnfinishedNodes()
   {
     // We had better have some unfinished nodes left:
-    assert( m_nodesUnfinished.size() );
+    Assert( m_nodesUnfinished.size() );
     // We should either not currently be processing unfinished nodes or 
     //  have finished copying the last unfinished node:
-    assert( !m_punStart || ( m_punCur == m_punEnd ) );
+    Assert( !m_punStart || ( m_punCur == m_punEnd ) );
 
     _ClearNodeArray();  // Clear any old unfinished nodes that we may have.
     m_punStart = 0;     // ts
@@ -506,7 +506,7 @@ protected:
           ++itHash, ++punCur )
     {
       _TyUNValueType &  rvtHash = *itHash;
-      assert( rvtHash.second.m_iRemainingUnmatched );
+      Assert( rvtHash.second.m_iRemainingUnmatched );
       // No need to save the unfinished node name - that is associated
       //  with each link that leaves it in the file. ( Though this too is
       //  unnecessary - except for error checking and for allowing some
@@ -561,7 +561,7 @@ protected:
   void  _CheckNodeContext()
   {
     // We had better be at a node insertion point:
-    assert( !m_pgnbNewRoot || PGLBCur() );
+    Assert( !m_pgnbNewRoot || PGLBCur() );
 
     // If we threw previously this may be non-null ( and should be destroyed ):
     if ( m_pgnbTempRoot )
@@ -572,11 +572,11 @@ protected:
 
     if ( t_fAllowUnconstructedLinks )
     {
-      assert( !m_pglbConstructedEl || PGLBCur() );
+      Assert( !m_pglbConstructedEl || PGLBCur() );
     }
     else
     {
-      assert( m_pglbConstructedEl == PGLBCur() );
+      Assert( m_pglbConstructedEl == PGLBCur() );
     }
 
     if ( m_pgnbNewRoot && !m_pglbConstructedEl )
@@ -589,7 +589,7 @@ protected:
       }
       else
       {
-        assert( !PGLBCur() );
+        Assert( !PGLBCur() );
         // Then have two node records in a row ( likely ):
         throw bad_graph_stream( "_CheckNodeContext(): Encountered a normal node record when expecting a link.\n");
       }
@@ -627,13 +627,13 @@ protected:
   {
     if ( !m_pgnbNewRoot )
     {
-      assert( !PGLBCur() && !PGNBCur() ); 
+      Assert( !PGLBCur() && !PGNBCur() ); 
       m_pgnbNewRoot = _pgnbNew;
     }
     else
     {
       // We will make this the relation of the current link:
-      assert( !m_pglbConstructedEl->PGNBRelation( m_fDirectionDown ) );
+      Assert( !m_pglbConstructedEl->PGNBRelation( m_fDirectionDown ) );
       m_pglbConstructedEl->SetRelationNode( m_fDirectionDown, _pgnbNew );
       m_pglbConstructedEl->InsertRelation( !m_fDirectionDown, _ppglbPos );
       m_pglbConstructedEl = 0;  // The construction of the link now owned by the graph.
@@ -801,7 +801,7 @@ protected:
   {
     if ( m_pglbConstructedEl )
     {
-      assert( PGLBCur() );
+      Assert( PGLBCur() );
       // Then we were expecting a node to be read - we had a constructed link:
       throw bad_graph_stream( "_ReadLink(): Expected a node found a link." );
     }
@@ -895,7 +895,7 @@ protected:
     {
       if ( PGLBCur() )
       {
-        assert( t_fAllowUnconstructedLinks || PGLBCur()->PGNBRelation( m_fDirectionDown ) );
+        Assert( t_fAllowUnconstructedLinks || PGLBCur()->PGNBRelation( m_fDirectionDown ) );
       }
 
       if ( _pvtUnfinished )
@@ -915,7 +915,7 @@ protected:
       {
         // Then need to link in the newly allocated link in - after the current link -
         //  or as the first relation of the current node.
-        assert( m_pglbAllocedInited );
+        Assert( m_pglbAllocedInited );
         m_pglbAllocedInited->SetRelationNode( !m_fDirectionDown, PGNBCur() );
         m_pglbAllocedInited->SetRelationNode( m_fDirectionDown, 0 );
         m_pglbAllocedInited->InsertRelation( m_fDirectionDown, 

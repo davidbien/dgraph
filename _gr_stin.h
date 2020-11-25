@@ -17,7 +17,7 @@ template < class t_TyInputStream, class t_TyRead >
 void
 _RawReadGraphEl( t_TyInputStream & _ris, t_TyRead & _rel )
 { 
-  assert( 0 ); // Should specialize for each stream type.
+  Assert( 0 ); // Should specialize for each stream type.
 }
 
 template <  class t_TyGraphNodeBaseReadPtr, 
@@ -174,7 +174,7 @@ public:
     _ReadNodePtr( _pgnbr );
     if ( t_fReadExtraInformation )
     {
-      assert( *_pglbr );  // This should have been read above.
+      Assert( *_pglbr );  // This should have been read above.
     }
     else
     {

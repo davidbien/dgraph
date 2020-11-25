@@ -232,7 +232,7 @@ public:
   // Transfer ownership of the newly created root:
   _TyGraphNodeDst * PGNTransferNewRoot() _BIEN_NOTHROW
   {
-    assert( !m_pgnDstTempRoot );
+    Assert( !m_pgnDstTempRoot );
     _TyGraphNodeDst * _pgn = m_pgnDstNewRoot;
     m_pgnDstNewRoot = 0;
     return _pgn;
@@ -280,7 +280,7 @@ public:
   {
     __THROWPT( e_ttMemory );
     pair< _TyULIterator, bool > pibLink = RLinksCur().insert( _rdn );
-    assert( pibLink.second );
+    Assert( pibLink.second );
   }
   void    RemoveLink( const _TyULIterator & rit ) _BIEN_NOTHROW
   {
@@ -388,11 +388,11 @@ copy( )
     {
       check_disconnected_nodes();
     }
-    assert( FNoDisconnected() );  // Should have handled all nodes and links.
+    Assert( FNoDisconnected() );  // Should have handled all nodes and links.
   }
   else
   {
-    assert( 0 );  // This needs to be done.
+    Assert( 0 );  // This needs to be done.
     // TODO: Should remove stray links from the destination.
   }
 }
@@ -452,7 +452,7 @@ do_copy_down( )
   // Either we are creating all the links or none - if we aren't doing a
   //  <m_fClosedDirectedCopy> then we may have created all the links already
   //  in a disconnected state:
-  assert( lpiDstChild.FIsLastChild() || 
+  Assert( lpiDstChild.FIsLastChild() || 
           ( !m_fClosedDirectedCopy && 
             m_pgnSrc->UChildren() == m_pgnDst->UChildren() ) );
 
@@ -479,7 +479,7 @@ do_copy_down( )
               // Find or insert the node - we know it will be there ( eventually ):
               _TyUNValueType vtInsert( lpiSrcChild.PGNChild(), _TyUnconnectedNode() );
               pibFoundNode = PIBInsertNode( vtInsert );
-              assert( ( lpiSrcChild.PGNChild() != m_pgnSrcCopyRoot ) || !pibFoundNode.second );
+              Assert( ( lpiSrcChild.PGNChild() != m_pgnSrcCopyRoot ) || !pibFoundNode.second );
             }
           else
             {
@@ -550,18 +550,18 @@ do_copy_down( )
                       lpiDstParent.NextParent(); // Move to point to the end of the list.
                     }
                 }
-              assert( ppglCurChildDst );
+              Assert( ppglCurChildDst );
 
               typename t_TyGraphDst::_TyGraphLink * pglCurChildDst = 
                 fHaveDstChildren ? lpiDstChild.PGLCur() : *ppglCurChildDst;
 
               if ( 1 < iParents ) // More than one to connect.
                 {
-                  assert( true == pibFoundNode.second );
+                  Assert( true == pibFoundNode.second );
                   // We have multiple parents and this node was not in the map:
                   // already inserted - get the reference from the map:
                   _TyUNValueType & rvtInsert = *pibFoundNode.first;
-                  assert( m_pgnDstTempRoot );
+                  Assert( m_pgnDstTempRoot );
                   rvtInsert.second.m_pgnbDst = m_pgnDstTempRoot;
                   rvtInsert.second.m_iRemainingUnmatched = --iParents;
                 }
@@ -602,9 +602,9 @@ do_copy_down( )
               // Move to child node - perhaps push current context:
               if ( lpiSrcChild.PGNChild()->FChildren() )
                 {
-                  assert( lpiSrcChild.PGNParent() == m_pgnSrc );
-                  assert( pglCurChildDst->PGNParent() == m_pgnDst );
-                  assert( lpiDstChild.PGNParent() == m_pgnDst );
+                  Assert( lpiSrcChild.PGNParent() == m_pgnSrc );
+                  Assert( pglCurChildDst->PGNParent() == m_pgnDst );
+                  Assert( lpiDstChild.PGNParent() == m_pgnDst );
 
                   m_pgnSrc = lpiSrcChild.PGNChild();
                   m_pgnDst = pglCurChildDst->PGNChild();
@@ -631,7 +631,7 @@ do_copy_down( )
             }
           else
             {
-              //assert( !fHaveDstChildren );  // if the node is in the map then we should not
+              //Assert( !fHaveDstChildren );  // if the node is in the map then we should not
               //  already have the destination children.
               // REVIEW: Unless we just created this unfinished node during this iteration.
               // Leave the assertion above to ensure that the test cases hit this problem.
@@ -643,9 +643,9 @@ do_copy_down( )
               _TyUNValueType &  rdnFound = *pibFoundNode.first;
 
               _TyULIterator itFoundNodeLink = ITFindLink( lpiSrcChild.PGLBCur() );
-              assert( ITEndLinks() != itFoundNodeLink );  // it had better be there :-)
+              Assert( ITEndLinks() != itFoundNodeLink );  // it had better be there :-)
               _TyGraphLinkBaseBaseDst * pglbFoundDst = (*itFoundNodeLink).second;
-              assert( pglbFoundDst );
+              Assert( pglbFoundDst );
 
               // REVIEW: This is not necessary - may be faster not to remove the link.
               // Except when doing a closed directed copy - then we need to know which links remain.
@@ -690,8 +690,8 @@ do_copy_down( )
               _TyContext & _rctxt = m_lContexts.front();
               lpiSrcChild.SetPPGLBCur( _rctxt.m_ppglbSrc );
               lpiDstChild.SetPPGLBCur( _rctxt.m_ppglbDst );
-              assert( !lpiSrcChild.FIsLastChild() );
-              assert( !lpiDstChild.FIsLastChild() );
+              Assert( !lpiSrcChild.FIsLastChild() );
+              Assert( !lpiDstChild.FIsLastChild() );
               m_lContexts.pop_front();
               m_iContexts--;
               // Restore the current nodes:
@@ -723,7 +723,7 @@ do_copy_up()
   // Either we are creating all the links or none - if we aren't doing a
   //  <m_fClosedDirectedCopy> then we may have created all the links already
   //  in a disconnected state:
-  assert( lpiDstParent.FIsLastParent() || 
+  Assert( lpiDstParent.FIsLastParent() || 
           ( !m_fClosedDirectedCopy && 
             m_pgnSrc->UParents() == m_pgnDst->UParents() ) );
 
@@ -751,7 +751,7 @@ do_copy_up()
               // Find or insert the node - we know it will be there ( eventually ):
               _TyUNValueType vtInsert( lpiSrcParent.PGNParent(), _TyUnconnectedNode() );
               pibFoundNode = PIBInsertNode( vtInsert );
-              assert( ( lpiSrcParent.PGNParent() != m_pgnSrcCopyRoot ) || !pibFoundNode.second );
+              Assert( ( lpiSrcParent.PGNParent() != m_pgnSrcCopyRoot ) || !pibFoundNode.second );
             }
           else
             {
@@ -822,18 +822,18 @@ do_copy_up()
                       lpiDstChild.NextChild(); // Move to point to the end of the list.
                     }
                 }
-              assert( ppglCurParentDst );
+              Assert( ppglCurParentDst );
 
               typename t_TyGraphDst::_TyGraphLink * pglCurParentDst = 
                 fHaveDstParents ? lpiDstParent.PGLCur() : *ppglCurParentDst;
 
               if ( 1 < iChildren )  // More than one to connect.
                 {
-                  assert( true == pibFoundNode.second );
+                  Assert( true == pibFoundNode.second );
                   // We have multiple children and this node was not in the map:
                   // already inserted - get the reference from the map:
                   _TyUNValueType & rvtInsert = *pibFoundNode.first;
-                  assert( m_pgnDstTempRoot );
+                  Assert( m_pgnDstTempRoot );
                   rvtInsert.second.m_pgnbDst = m_pgnDstTempRoot;
                   rvtInsert.second.m_iRemainingUnmatched = --iChildren;
                 }
@@ -876,9 +876,9 @@ do_copy_up()
               // Move to parent node - perhaps push current context:
               if ( lpiSrcParent.PGNParent()->FParents() )
                 {
-                  assert( lpiSrcParent.PGNChild() == m_pgnSrc );
-                  assert( pglCurParentDst->PGNChild() == m_pgnDst );
-                  assert( lpiDstParent.PGNChild() == m_pgnDst );
+                  Assert( lpiSrcParent.PGNChild() == m_pgnSrc );
+                  Assert( pglCurParentDst->PGNChild() == m_pgnDst );
+                  Assert( lpiDstParent.PGNChild() == m_pgnDst );
 
                   m_pgnSrc = lpiSrcParent.PGNParent();
                   m_pgnDst = pglCurParentDst->PGNParent();
@@ -905,7 +905,7 @@ do_copy_up()
             }
           else
             {
-              //assert( !fHaveDstParents ); // if the node is in the map then we should not
+              //Assert( !fHaveDstParents ); // if the node is in the map then we should not
               //  already have the destination parents.
               // REVIEW: Unless we just created this unfinished node during this iteration.
               // Leave the assertion above to ensure that the test cases hit this problem.
@@ -917,9 +917,9 @@ do_copy_up()
               _TyUNValueType &  rdnFound = *pibFoundNode.first;
 
               _TyULIterator itFoundNodeLink = ITFindLink( lpiSrcParent.PGLBCur() );
-              assert( ITEndLinks() != itFoundNodeLink );  // it had better be there :-)
+              Assert( ITEndLinks() != itFoundNodeLink );  // it had better be there :-)
               _TyGraphLinkBaseBaseDst * pglbFoundDst = (*itFoundNodeLink).second;
-              assert( pglbFoundDst );
+              Assert( pglbFoundDst );
 
               // REVIEW: This is not necessary - may be faster not to remove the link.
               // Except when doing a closed directed copy - then we need to know which links remain.
@@ -964,8 +964,8 @@ do_copy_up()
               _TyContext & _rctxt = m_lContexts.front();
               lpiSrcParent.SetPPGLBCur( _rctxt.m_ppglbSrc );
               lpiDstParent.SetPPGLBCur( _rctxt.m_ppglbDst );
-              assert( !lpiSrcParent.FIsLastParent() );
-              assert( !lpiDstParent.FIsLastParent() );
+              Assert( !lpiSrcParent.FIsLastParent() );
+              Assert( !lpiDstParent.FIsLastParent() );
               m_lContexts.pop_front();
               m_iContexts--;
               // Restore the current nodes:

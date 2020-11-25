@@ -91,7 +91,7 @@ public:
     for ( size_t _st = 1; _st < m_stNodes; ++_st )
     {
       size_t stNode = _rand( _st ); // Choose among the current nodes.
-      assert( stNode < _st );
+      Assert( stNode < _st );
 			_TyGraphLink *  pgl = m_rg.create_link1((_TyLinkEl)_st);
 
       if ( _rand( 2 ) == 0 )

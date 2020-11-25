@@ -119,7 +119,7 @@ protected:
   void  _Next(  _TyGraphNodeBase * _pgnb, 
                 _TyGraphLinkBase * _pglb )
   {
-    assert( !_pgnb ^ !_pglb );
+    Assert( !_pgnb ^ !_pglb );
 
     // Save stream position for possible throw - this is also good for debugging - if we encounter
     //  an error in the stream we can go back and re-examine:

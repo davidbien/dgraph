@@ -108,7 +108,7 @@ struct _mmout_object
     uint8_t * pbyMapped = m_pbyMappedBegin;
     m_pbyMappedBegin = (uint8_t*)MAP_FAILED;
     int iUnmap = ::munmap( pbyMapped, stMapped ); // We don't care if this fails pretty much.
-    assert( !iUnmap );
+    Assert( !iUnmap );
     __THROWPT_DTOR( e_ttFileOutput | e_ttFatal, fInUnwinding );
     if ( ( -1 == iTruncRet ) && !fInUnwinding ) // This is the only failure we care about really since it results in the file being the wrong size.
         THROWNAMEDEXCEPTIONERRNO( errnoSaved, "_mmout_object::~_mmout_object(): failed to ftruncate m_fd[%d]", m_fd );
@@ -141,7 +141,7 @@ struct _mmout_object
     {
       _GrowMap( stNeed - sstLeft );
       size_t stNeed2 = m_one.StWrite( m_pbyMappedCur, ( m_pbyMappedEnd - m_pbyMappedCur ), _rel );
-      assert( stNeed == stNeed2 );
+      Assert( stNeed == stNeed2 );
     }
     m_pbyMappedCur += stNeed;
 	}
@@ -154,7 +154,7 @@ struct _mmout_object
     {
       _GrowMap( stNeed - sstLeft );
       size_t stNeed2 = m_ole.StWrite( m_pbyMappedCur, ( m_pbyMappedEnd - m_pbyMappedCur ), _rel );
-      assert( stNeed == stNeed2 );
+      Assert( stNeed == stNeed2 );
     }
     m_pbyMappedCur += stNeed;
 	}
@@ -187,7 +187,7 @@ protected:
     m_pbyMappedCur = (uint8_t*)MAP_FAILED;
     m_pbyMappedEnd = (uint8_t*)MAP_FAILED;
     int iRet = ::munmap( pbyOldMapping, stMapped );
-    assert( !iRet ); // not much to do about this.
+    Assert( !iRet ); // not much to do about this.
     stMapped += stGrowBy;
     iRet = ::lseek( m_fd, stMapped - 1, SEEK_SET );
     __THROWPT( e_ttFileOutput | e_ttFatal );

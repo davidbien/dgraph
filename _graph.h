@@ -670,7 +670,7 @@ public:
   void
   destroy_node( _TyGraphNode * _pgn ) _BIEN_NOTHROW
   {
-    assert( _pgn );
+    Assert( _pgn );
     _graph_destroy_struct<_TyThis>  gds( *this, _pgn );
     // Check to ensure that the the passed node is not connected to the root.
 #ifdef __GRAPH_DEBUG_DTOR
@@ -684,7 +684,7 @@ public:
   __DGRAPH_STATIC_ALLOC_DECL void
   destroy_single_node( _TyGraphNode * _pgn ) _BIEN_NOTHROW
   {
-    assert( _pgn );
+    Assert( _pgn );
     _destruct_node( _pgn );
     _deallocate_node( _pgn );
   }
@@ -693,7 +693,7 @@ public:
   __DGRAPH_STATIC_ALLOC_DECL void
   destroy_link( _TyGraphLink * _pgl ) _BIEN_NOTHROW
   {
-    assert( _pgl );
+    Assert( _pgl );
     _destruct_link( _pgl );
     _deallocate_link( _pgl );
   }

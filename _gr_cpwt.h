@@ -70,7 +70,7 @@ public:
   }
   void  _Disconnect()
   {
-    assert( m_psos );
+    Assert( m_psos );
     m_gcl.remove_link();
     m_psos = 0;
   }
@@ -176,7 +176,7 @@ protected:
   }
   void _CopyOnWrite()
   {
-    assert( m_psos );
+    Assert( m_psos );
     m_gcl.remove_link();  // Disconnect from graph element - we are overwriting {m_gcl}.
     _BIEN_TRY
     {
