@@ -21,6 +21,8 @@
 #include "_debug.h"
 #include "_util.h"
 #include "_dbgthrw.h"
+#include "_assert.h"
+#include "_trace.h"
 
 #ifndef __DGRAPH_DEFAULT_ALLOCATOR
 #if defined(_USE_STLPORT) && !defined(NDEBUG)
