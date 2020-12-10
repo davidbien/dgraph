@@ -102,11 +102,13 @@ struct _mmout_object
   {
     bool fInUnwinding = !!std::uncaught_exceptions();
     // We need to truncate the file to m_pbyMappedCur - m_pbyMappedBegin bytes.
+    errno = 0;
     int iTruncRet = ftruncate( m_fd, m_pbyMappedCur - m_pbyMappedBegin );
     int errnoSaved = errno;
     size_t stMapped = m_pbyMappedEnd - m_pbyMappedBegin;
     uint8_t * pbyMapped = m_pbyMappedBegin;
     m_pbyMappedBegin = (uint8_t*)MAP_FAILED;
+    errno = 0;
     int iUnmap = ::munmap( pbyMapped, stMapped ); // We don't care if this fails pretty much.
     Assert( !iUnmap );
     __THROWPT_DTOR( e_ttFileOutput | e_ttFatal, fInUnwinding );
@@ -161,15 +163,18 @@ struct _mmout_object
 protected:
   void _OpenMap()
   {
+    errno = 0;
     off_t offEnd = ::lseek( m_fd, s_knGrowFileByBytes-1, SEEK_SET );
     __THROWPT( e_ttFileOutput | e_ttFatal );
     if ( -1 == offEnd )
       THROWNAMEDEXCEPTIONERRNO( errno, "_mmout_object::_OpenMap(): Attempting to lseek() failed m_fd[%d].", m_fd );
+    errno = 0;
     ssize_t sstRet = ::write( m_fd, "Z", 1 ); // write a single byte to grow the file to s_knGrowFileByBytes.
     __THROWPT( e_ttFileOutput | e_ttFatal );
     if ( -1 == sstRet )
       THROWNAMEDEXCEPTIONERRNO( errno, "_mmout_object::_OpenMap(): Attempting to write() failed for m_fd[%d]", m_fd );
     // No need to reset the file pointer to the beginning - and in fact we like it at the end in case someone were to actually try to write to it.
+    errno = 0;
     m_pbyMappedBegin = (uint8_t*)::mmap( 0, s_knGrowFileByBytes, PROT_READ | PROT_WRITE, MAP_SHARED, m_fd, 0 );
     __THROWPT( e_ttFileOutput | e_ttFatal );
     if ( m_pbyMappedBegin == MAP_FAILED )
@@ -186,17 +191,21 @@ protected:
     m_pbyMappedBegin = (uint8_t*)MAP_FAILED;
     m_pbyMappedCur = (uint8_t*)MAP_FAILED;
     m_pbyMappedEnd = (uint8_t*)MAP_FAILED;
+    errno = 0;
     int iRet = ::munmap( pbyOldMapping, stMapped );
     Assert( !iRet ); // not much to do about this.
     stMapped += stGrowBy;
+    errno = 0;
     iRet = ::lseek( m_fd, stMapped - 1, SEEK_SET );
     __THROWPT( e_ttFileOutput | e_ttFatal );
     if ( -1 == iRet )
       THROWNAMEDEXCEPTIONERRNO( errno, "_mmout_object::_GrowMap(): lseek() failed for m_fd[%d].", m_fd );
+    errno = 0;
     iRet = ::write( m_fd, "Z", 1 ); // just write a single byte to grow the file.
     __THROWPT( e_ttFileOutput | e_ttFatal );
     if ( -1 == iRet )
       THROWNAMEDEXCEPTIONERRNO( errno, "_mmout_object::_GrowMap(): write() failed for m_fd[%d].", m_fd );
+    errno = 0;
     m_pbyMappedBegin = (uint8_t*)::mmap( 0, stMapped, PROT_READ | PROT_WRITE, MAP_SHARED, m_fd, 0 );
     __THROWPT( e_ttFileOutput | e_ttFatal );
     if ( m_pbyMappedBegin == MAP_FAILED )
@@ -258,7 +267,7 @@ struct _mmin_object
 	{
     __THROWPT( e_ttFileInput ); // should be able to recover from this.
     if ( ssize_t(_st) > ( m_pbyMappedEnd - m_pbyMappedCur ) )
-      THROWNAMEDEXCEPTIONERRNO( errno, "_mmin_object::Read(): EOF.");
+      THROWNAMEDEXCEPTION( "_mmin_object::Read(): EOF.");
     memcpy( _pv, m_pbyMappedCur, _st );
     m_pbyMappedCur += _st;
 	}
@@ -281,11 +290,13 @@ protected:
   void _OpenMap()
   {
     // Now get the size of the file and then map it.
+    errno = 0;
     off_t offEnd = ::lseek( m_fd, 0, SEEK_END );
     __THROWPT( e_ttFileInput | e_ttFatal );
     if ( -1 == offEnd )
         THROWNAMEDEXCEPTIONERRNO( errno, "_mmin_object::Open(): Attempting to seek to EOF failed for m_fd[%d]", m_fd );
     // No need to reset the file pointer to the beginning - and in fact we like it at the end in case someone were to actually try to read from it.
+    errno = 0;
     m_pbyMappedBegin = (uint8_t*)mmap( 0, offEnd, PROT_READ, MAP_SHARED, m_fd, 0 );
     __THROWPT( e_ttFileInput | e_ttFatal );
     if ( m_pbyMappedBegin == (uint8_t*)MAP_FAILED )

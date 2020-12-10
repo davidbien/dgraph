@@ -23,6 +23,7 @@ _RawWriteGraphEl( int _fd, t_TyWrite const & _rEl )
 {	
 	if ( sizeof( _rEl ) )
 	{
+    errno = 0;
     ssize_t sstWrit = ::write( _fd, (const void*)&_rEl, sizeof( _rEl ) );
     __THROWPT( e_ttFileOutput );
     if ( sstWrit != sizeof( _rEl ) )
@@ -37,6 +38,7 @@ _RawReadGraphEl( int _fd, t_TyRead & _rEl )
 {	
 	if ( sizeof( _rEl ) )
 	{
+    errno = 0;
     ssize_t sstRead = ::read( _fd, (void*)&_rEl, sizeof( _rEl ) );
     __THROWPT( e_ttFileInput );
     if ( sstRead != sizeof( _rEl ) )
@@ -93,6 +95,7 @@ struct _fdout_object
 
 	_TyStreamPos TellP() const
   {
+    errno = 0;
     off_t off = lseek( m_fd, 0, SEEK_CUR );
     __THROWPT( e_ttFileOutput );
     if ( -1 == off )
@@ -101,6 +104,7 @@ struct _fdout_object
   }
 	void SeekP( _TyStreamPos _sp )	
   {
+    errno = 0;
     off_t off = lseek( m_fd, _sp, SEEK_SET );
     __THROWPT( e_ttFileOutput );
     if ( -1 == off )
@@ -111,6 +115,7 @@ struct _fdout_object
 	{
     if ( _st )
     {
+      errno = 0;
       ssize_t sstWrit = ::write( m_fd, _pv, _st );
       __THROWPT( e_ttFileOutput );
       if ( sstWrit != _st )
@@ -164,6 +169,7 @@ struct _fdin_object
 
 	_TyStreamPos TellG() const
 	{ 
+    errno = 0;
     off_t off = lseek( m_fd, 0, SEEK_CUR );
     __THROWPT( e_ttFileInput | e_ttFatal );
     if ( -1 == off )
@@ -172,6 +178,7 @@ struct _fdin_object
   }
 	void SeekG( _TyStreamPos _sp )	
   {
+    errno = 0;
     off_t off = lseek( m_fd, _sp, SEEK_SET );
     __THROWPT( e_ttFileInput | e_ttFatal );
     if ( -1 == off )
@@ -180,6 +187,7 @@ struct _fdin_object
 
 	void Read( void * _pv, size_t _st )
 	{
+    errno = 0;
     ssize_t sstRead = ::read( m_fd, _pv, _st );
     __THROWPT( e_ttFileInput );
     if ( sstRead != _st )
