@@ -283,11 +283,14 @@ class _graph_link_ident_iterator_base_notsafe;
 template < class _TyGraphNodeBase, class _TyGraphLinkBase >
 class _graph_link_pos_iterator_base_notsafe
 {
-  typedef _graph_link_pos_iterator_base_notsafe<  _TyGraphNodeBase, _TyGraphLinkBase >  _TyThis;
-
+  typedef _graph_link_pos_iterator_base_notsafe _TyThis;
 protected:
 
-  _TyGraphLinkBase **     m_ppglbCur;
+// REVIEW:<dbien>: We should probably, at least in debug, record whether this is a parent or child iterator currently.
+// We could obtain the iterator from the node and then it could mark the child/parent nature and then we could
+//  assert/throw in various methods if the iterator was misused.
+// Also change _fChild in the methods below and elsewhere to an enum so that things are more readable.
+  _TyGraphLinkBase ** m_ppglbCur;
 
 public:
 
