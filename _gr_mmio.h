@@ -291,16 +291,18 @@ protected:
   {
     // Now get the size of the file and then map it.
     errno = 0;
-    off_t offEnd = ::lseek( m_fd, 0, SEEK_END );
-    __THROWPT( e_ttFileInput | e_ttFatal );
-    if ( -1 == offEnd )
-        THROWNAMEDEXCEPTIONERRNO( errno, "_mmin_object::Open(): Attempting to seek to EOF failed for m_fd[%d]", m_fd );
+    struct stat statBuf;
+    int iStatResult = ::stat( m_fd, &statBuf );
+    if ( -1 == iStatResult )
+      THROWNAMEDEXCEPTIONERRNO( errno, "_mmin_object::Open(): stat() failed for m_fd[%d]", m_fd );
+    if ( !S_ISREG(statBuf.st_mode) )
+      THROWNAMEDEXCEPTIONERRNO( errno, "_mmin_object::Open(): m_fd[%d] is not a regular file, st_mode[0x%x].", m_fd, statBuf.st_mode );
     // No need to reset the file pointer to the beginning - and in fact we like it at the end in case someone were to actually try to read from it.
     errno = 0;
-    m_pbyMappedBegin = (uint8_t*)mmap( 0, offEnd, PROT_READ, MAP_SHARED, m_fd, 0 );
+    m_pbyMappedBegin = (uint8_t*)mmap( 0, statBuf.st_size, PROT_READ, MAP_SHARED | MAP_NORESERVE, m_fd, 0 );
     __THROWPT( e_ttFileInput | e_ttFatal );
     if ( m_pbyMappedBegin == (uint8_t*)MAP_FAILED )
-        THROWNAMEDEXCEPTIONERRNO( errno, "_mmin_object::Open(): mmap() failed for m_fd[%d]", m_fd );
+        THROWNAMEDEXCEPTIONERRNO( errno, "_mmin_object::Open(): mmap() failed for m_fd[%d] st_size[%ld].", m_fd, statBuf.st_size );
     m_pbyMappedCur = m_pbyMappedBegin;
     m_pbyMappedEnd = m_pbyMappedCur + offEnd;
   }
