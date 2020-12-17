@@ -27,7 +27,7 @@ _RawWriteGraphEl( int _fd, t_TyWrite const & _rEl )
     ssize_t sstWrit = ::write( _fd, (const void*)&_rEl, sizeof( _rEl ) );
     __THROWPT( e_ttFileOutput );
     if ( sstWrit != sizeof( _rEl ) )
-      THROWNAMEDEXCEPTIONERRNO( errno, "_RawWriteGraphEl(fd): failed to write entire element." );
+      THROWNAMEDEXCEPTIONERRNO( errno, "Failed to write entire element." );
 	}
 }
 
@@ -42,7 +42,7 @@ _RawReadGraphEl( int _fd, t_TyRead & _rEl )
     ssize_t sstRead = ::read( _fd, (void*)&_rEl, sizeof( _rEl ) );
     __THROWPT( e_ttFileInput );
     if ( sstRead != sizeof( _rEl ) )
-      THROWNAMEDEXCEPTIONERRNO( errno, "_RawReadGraphEl(fd): failed to read entire element." );
+      THROWNAMEDEXCEPTIONERRNO( errno, "Failed to read entire element." );
 	}
 }
 
@@ -99,7 +99,7 @@ struct _fdout_object
     off_t off = lseek( m_fd, 0, SEEK_CUR );
     __THROWPT( e_ttFileOutput );
     if ( -1 == off )
-      THROWNAMEDEXCEPTIONERRNO( errno, "_fdout_object::TellP(): lseek() failed." );
+      THROWNAMEDEXCEPTIONERRNO( errno, "lseek() failed." );
     return off;
   }
 	void SeekP( _TyStreamPos _sp )	
@@ -108,7 +108,7 @@ struct _fdout_object
     off_t off = lseek( m_fd, _sp, SEEK_SET );
     __THROWPT( e_ttFileOutput );
     if ( -1 == off )
-      THROWNAMEDEXCEPTIONERRNO( errno, "_fdout_object::SeekP(): lseek() failed." );
+      THROWNAMEDEXCEPTIONERRNO( errno, "lseek() failed." );
   }
 
 	void Write( const void * _pv, size_t _st )
@@ -119,7 +119,7 @@ struct _fdout_object
       ssize_t sstWrit = ::write( m_fd, _pv, _st );
       __THROWPT( e_ttFileOutput );
       if ( sstWrit != _st )
-        THROWNAMEDEXCEPTIONERRNO( errno, "_fdout_object::Write(): ::write() failed." );
+        THROWNAMEDEXCEPTIONERRNO( errno, "::write() failed." );
     }
 	}
 
@@ -173,7 +173,7 @@ struct _fdin_object
     off_t off = lseek( m_fd, 0, SEEK_CUR );
     __THROWPT( e_ttFileInput | e_ttFatal );
     if ( -1 == off )
-      THROWNAMEDEXCEPTIONERRNO( errno, "_fdin_object::TellG(): lseek() failed." );
+      THROWNAMEDEXCEPTIONERRNO( errno, "lseek() failed." );
     return off;
   }
 	void SeekG( _TyStreamPos _sp )	
@@ -182,7 +182,7 @@ struct _fdin_object
     off_t off = lseek( m_fd, _sp, SEEK_SET );
     __THROWPT( e_ttFileInput | e_ttFatal );
     if ( -1 == off )
-      THROWNAMEDEXCEPTIONERRNO( errno, "_fdin_object::SeekG(): lseek() failed." );
+      THROWNAMEDEXCEPTIONERRNO( errno, "lseek() failed." );
 	}
 
 	void Read( void * _pv, size_t _st )
@@ -191,7 +191,7 @@ struct _fdin_object
     ssize_t sstRead = ::read( m_fd, _pv, _st );
     __THROWPT( e_ttFileInput );
     if ( sstRead != _st )
-      THROWNAMEDEXCEPTIONERRNO( errno, "_fdin_object::Read(): read() failed.");
+      THROWNAMEDEXCEPTIONERRNO( errno, "read() failed.");
 	}
 
 	template < class t_TyEl >

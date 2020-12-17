@@ -23,23 +23,24 @@
 __DGRAPH_BEGIN_NAMESPACE
 
 #ifdef __GR_THROWBADGRAPHERRORS
-#ifdef __NAMDDEXC_STDBASE
-#pragma push_macro("std")
-#undef std
-#endif //__NAMDDEXC_STDBASE
 class bad_graph : public std::_t__Named_exception< __DGRAPH_DEFAULT_ALLOCATOR >
 {
+  typedef bad_graph _TyThis;
   typedef std::_t__Named_exception< __DGRAPH_DEFAULT_ALLOCATOR > _TyBase;
 public:
-  bad_graph( const string_type & __s ) : _TyBase( __s ) {}
+  bad_graph( const char * _pc )
+    : _TyBase( _pc ) 
+  {
+  }
+  bad_graph( const string_type & __s ) 
+    : _TyBase( __s ) 
+  {
+  }
 };
-#ifdef __NAMDDEXC_STDBASE
-#pragma pop_macro("std")
-#endif //__NAMDDEXC_STDBASE
+  
 #else //__GR_THROWBADGRAPHERRORS
 #error This not currently supported. Need error propagation - not too tough, but...
 #endif //__GR_THROWBADGRAPHERRORS
-
 
 // Function that knows how to write raw data to a stream:
 template < class t_TyOutputStream, class t_TyWrite >
