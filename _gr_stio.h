@@ -122,7 +122,9 @@ struct _ostream_object
 	template < class t_TyOut >
 	_ostream_object &	operator << ( t_TyOut const & _r )
 	{
-		m_ros << _r;
+    std::ostream::sentry s(m_ros);
+    if ( s ) 
+			m_ros << _r;
 		return *this;
 	}
 };
