@@ -71,9 +71,9 @@ struct _mmout_object
   static const size_t s_knGrowFileByBytes = t_knGrowFileByBytes;
 
   int m_fd{-1}; // This object doesn't own the lifetime of the open file.
-  uint8_t * m_pbyMappedBegin{(uint8_t*)MAP_FAILED};
-  uint8_t * m_pbyMappedCur{(uint8_t*)MAP_FAILED};
-  uint8_t * m_pbyMappedEnd{(uint8_t*)MAP_FAILED};
+  uint8_t * m_pbyMappedBegin{(uint8_t*)vkpvNullMapping};
+  uint8_t * m_pbyMappedCur{(uint8_t*)vkpvNullMapping};
+  uint8_t * m_pbyMappedEnd{(uint8_t*)vkpvNullMapping};
 
   t_TyOutputNodeEl  m_one;
   t_TyOutputLinkEl  m_ole;
@@ -102,13 +102,13 @@ struct _mmout_object
   {
     bool fInUnwinding = !!std::uncaught_exceptions();
     // We need to truncate the file to m_pbyMappedCur - m_pbyMappedBegin bytes.
-    errno = 0;
+    PrepareErrNo();
     int iTruncRet = ftruncate( m_fd, m_pbyMappedCur - m_pbyMappedBegin );
-    int errnoSaved = errno;
+    int errnoSaved = GetLastErrNo();
     size_t stMapped = m_pbyMappedEnd - m_pbyMappedBegin;
     uint8_t * pbyMapped = m_pbyMappedBegin;
-    m_pbyMappedBegin = (uint8_t*)MAP_FAILED;
-    errno = 0;
+    m_pbyMappedBegin = (uint8_t*)vkpvNullMapping;
+    PrepareErrNo();
     int iUnmap = ::munmap( pbyMapped, stMapped ); // We don't care if this fails pretty much.
     Assert( !iUnmap );
     __THROWPT_DTOR( e_ttFileOutput | e_ttFatal, fInUnwinding );
@@ -163,22 +163,22 @@ struct _mmout_object
 protected:
   void _OpenMap()
   {
-    errno = 0;
+    PrepareErrNo();
     off_t offEnd = ::lseek( m_fd, s_knGrowFileByBytes-1, SEEK_SET );
     __THROWPT( e_ttFileOutput | e_ttFatal );
     if ( -1 == offEnd )
-      THROWNAMEDEXCEPTIONERRNO( errno, "Attempting to lseek() failed m_fd[%d].", m_fd );
-    errno = 0;
+      THROWNAMEDEXCEPTIONERRNO( GetLastErrNo(), "Attempting to lseek() failed m_fd[%d].", m_fd );
+    PrepareErrNo();
     ssize_t sstRet = ::write( m_fd, "Z", 1 ); // write a single byte to grow the file to s_knGrowFileByBytes.
     __THROWPT( e_ttFileOutput | e_ttFatal );
     if ( -1 == sstRet )
-      THROWNAMEDEXCEPTIONERRNO( errno, "Attempting to write() failed for m_fd[%d]", m_fd );
+      THROWNAMEDEXCEPTIONERRNO( GetLastErrNo(), "Attempting to write() failed for m_fd[%d]", m_fd );
     // No need to reset the file pointer to the beginning - and in fact we like it at the end in case someone were to actually try to write to it.
-    errno = 0;
+    PrepareErrNo();
     m_pbyMappedBegin = (uint8_t*)::mmap( 0, s_knGrowFileByBytes, PROT_READ | PROT_WRITE, MAP_SHARED, m_fd, 0 );
     __THROWPT( e_ttFileOutput | e_ttFatal );
-    if ( m_pbyMappedBegin == MAP_FAILED )
-      THROWNAMEDEXCEPTIONERRNO( errno, "mmap() failed for m_fd[%d]", m_fd );
+    if ( m_pbyMappedBegin == vkpvNullMapping )
+      THROWNAMEDEXCEPTIONERRNO( GetLastErrNo(), "mmap() failed for m_fd[%d]", m_fd );
     m_pbyMappedCur = m_pbyMappedBegin;
     m_pbyMappedEnd = m_pbyMappedCur + s_knGrowFileByBytes;
   }
@@ -188,28 +188,28 @@ protected:
     size_t stMapped = m_pbyMappedEnd - m_pbyMappedBegin;
     uint8_t * pbyOldMapping = m_pbyMappedBegin;
     uint8_t * pbyOldMapCur = m_pbyMappedCur;
-    m_pbyMappedBegin = (uint8_t*)MAP_FAILED;
-    m_pbyMappedCur = (uint8_t*)MAP_FAILED;
-    m_pbyMappedEnd = (uint8_t*)MAP_FAILED;
-    errno = 0;
+    m_pbyMappedBegin = (uint8_t*)vkpvNullMapping;
+    m_pbyMappedCur = (uint8_t*)vkpvNullMapping;
+    m_pbyMappedEnd = (uint8_t*)vkpvNullMapping;
+    PrepareErrNo();
     int iRet = ::munmap( pbyOldMapping, stMapped );
     Assert( !iRet ); // not much to do about this.
     stMapped += stGrowBy;
-    errno = 0;
+    PrepareErrNo();
     iRet = ::lseek( m_fd, stMapped - 1, SEEK_SET );
     __THROWPT( e_ttFileOutput | e_ttFatal );
     if ( -1 == iRet )
-      THROWNAMEDEXCEPTIONERRNO( errno, "lseek() failed for m_fd[%d].", m_fd );
-    errno = 0;
+      THROWNAMEDEXCEPTIONERRNO( GetLastErrNo(), "lseek() failed for m_fd[%d].", m_fd );
+    PrepareErrNo();
     iRet = ::write( m_fd, "Z", 1 ); // just write a single byte to grow the file.
     __THROWPT( e_ttFileOutput | e_ttFatal );
     if ( -1 == iRet )
-      THROWNAMEDEXCEPTIONERRNO( errno, "write() failed for m_fd[%d].", m_fd );
-    errno = 0;
+      THROWNAMEDEXCEPTIONERRNO( GetLastErrNo(), "write() failed for m_fd[%d].", m_fd );
+    PrepareErrNo();
     m_pbyMappedBegin = (uint8_t*)::mmap( 0, stMapped, PROT_READ | PROT_WRITE, MAP_SHARED, m_fd, 0 );
     __THROWPT( e_ttFileOutput | e_ttFatal );
-    if ( m_pbyMappedBegin == MAP_FAILED )
-      THROWNAMEDEXCEPTIONERRNO( errno, "mmap() failed for m_fd[%d].", m_fd );
+    if ( m_pbyMappedBegin == vkpvNullMapping )
+      THROWNAMEDEXCEPTIONERRNO( GetLastErrNo(), "mmap() failed for m_fd[%d].", m_fd );
     m_pbyMappedEnd = m_pbyMappedBegin + stMapped;
     m_pbyMappedCur = m_pbyMappedBegin + ( pbyOldMapCur - pbyOldMapping );
   }
@@ -225,9 +225,9 @@ struct _mmin_object
 	typedef t_TyInputLinkEl _TyIOLinkEl;
 
 	int m_fd{-1}; // This object doesn't own the lifetime of the open file.
-  uint8_t * m_pbyMappedBegin{(uint8_t*)MAP_FAILED};
-  uint8_t * m_pbyMappedCur{(uint8_t*)MAP_FAILED};
-  uint8_t * m_pbyMappedEnd{(uint8_t*)MAP_FAILED};
+  uint8_t * m_pbyMappedBegin{(uint8_t*)vkpvNullMapping};
+  uint8_t * m_pbyMappedCur{(uint8_t*)vkpvNullMapping};
+  uint8_t * m_pbyMappedEnd{(uint8_t*)vkpvNullMapping};
 
   t_TyInputNodeEl m_ine;
   t_TyInputLinkEl m_ile;
@@ -290,19 +290,19 @@ protected:
   void _OpenMap()
   {
     // Now get the size of the file and then map it.
-    errno = 0;
+    PrepareErrNo();
     struct stat statBuf;
     int iStatResult = ::stat( m_fd, &statBuf );
     if ( -1 == iStatResult )
-      THROWNAMEDEXCEPTIONERRNO( errno, "stat() failed for m_fd[%d]", m_fd );
+      THROWNAMEDEXCEPTIONERRNO( GetLastErrNo(), "stat() failed for m_fd[%d]", m_fd );
     if ( !S_ISREG(statBuf.st_mode) )
-      THROWNAMEDEXCEPTIONERRNO( errno, "m_fd[%d] is not a regular file, st_mode[0x%x].", m_fd, statBuf.st_mode );
+      THROWNAMEDEXCEPTIONERRNO( GetLastErrNo(), "m_fd[%d] is not a regular file, st_mode[0x%x].", m_fd, statBuf.st_mode );
     // No need to reset the file pointer to the beginning - and in fact we like it at the end in case someone were to actually try to read from it.
-    errno = 0;
+    PrepareErrNo();
     m_pbyMappedBegin = (uint8_t*)mmap( 0, statBuf.st_size, PROT_READ, MAP_SHARED | MAP_NORESERVE, m_fd, 0 );
     __THROWPT( e_ttFileInput | e_ttFatal );
-    if ( m_pbyMappedBegin == (uint8_t*)MAP_FAILED )
-        THROWNAMEDEXCEPTIONERRNO( errno, "mmap() failed for m_fd[%d] st_size[%ld].", m_fd, statBuf.st_size );
+    if ( m_pbyMappedBegin == (uint8_t*)vkpvNullMapping )
+        THROWNAMEDEXCEPTIONERRNO( GetLastErrNo(), "mmap() failed for m_fd[%d] st_size[%ld].", m_fd, statBuf.st_size );
     m_pbyMappedCur = m_pbyMappedBegin;
     m_pbyMappedEnd = m_pbyMappedCur + offEnd;
   }
