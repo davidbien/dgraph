@@ -143,8 +143,8 @@ public:
     : _TyIterBase( static_cast< typename t_TyIter::_TyIterBase const & >( _r ) )
   {
     __TRANSFER_CONST( typename t_TyIter::_TyFIsConstIterator, _TyFIsConstIterator );
-    __ASSERT_SAME_TYPE3( _TyGraphNode, typename t_TyIter::_TyGraphNode, _TyAssertNode );
-    __ASSERT_SAME_TYPE3( _TyGraphLink, typename t_TyIter::_TyGraphLink, _TyAssertLink );
+    __ASSERT_SAME_TYPE( _TyGraphNode, typename t_TyIter::_TyGraphNode );
+    __ASSERT_SAME_TYPE( _TyGraphLink, typename t_TyIter::_TyGraphLink );
   }
 
   // Construction that just obtains the allocator - if any - this doesn't check const-correctness
@@ -153,8 +153,8 @@ public:
   _graph_typed_iterator( t_TyIter const & _r, std::false_type )
     : _TyIterBase( static_cast< typename t_TyIter::_TyIterBase const & >( _r ), std::false_type() )
   {
-    __ASSERT_SAME_TYPE3( _TyGraphNode, typename t_TyIter::_TyGraphNode, _TyAssertNode );
-    __ASSERT_SAME_TYPE3( _TyGraphLink, typename t_TyIter::_TyGraphLink, _TyAssertLink );
+    __ASSERT_SAME_TYPE( _TyGraphNode, typename t_TyIter::_TyGraphNode );
+    __ASSERT_SAME_TYPE( _TyGraphLink, typename t_TyIter::_TyGraphLink );
   }
 
   // Construction that allows transformation to/from const - doesn't check const-correctness
@@ -188,8 +188,8 @@ public:
   operator = ( t_TyIter const & _r )
   {
     __TRANSFER_CONST( typename t_TyIter::_TyFIsConstIterator, _TyFIsConstIterator );
-    __ASSERT_SAME_TYPE3( _TyGraphNode, typename t_TyIter::_TyGraphNode, _TyAssertNode );
-    __ASSERT_SAME_TYPE3( _TyGraphLink, typename t_TyIter::_TyGraphLink, _TyAssertLink );
+    __ASSERT_SAME_TYPE( _TyGraphNode, typename t_TyIter::_TyGraphNode );
+    __ASSERT_SAME_TYPE( _TyGraphLink, typename t_TyIter::_TyGraphLink );
     _TyIterBase::operator = ( static_cast< typename t_TyIter::_TyIterBase const & >( _r ) );
   }
 
@@ -464,8 +464,8 @@ public:
   explicit _graph_typed_iterator( t_TyIter const & _r, std::false_type )
     : _TyIterBase( static_cast< typename t_TyIter::_TyIterBase const & >( _r ), std::false_type() )
   {
-    __ASSERT_SAME_TYPE3( _TyGraphNode, typename t_TyIter::_TyGraphNode, _TyAssertNode );
-    __ASSERT_SAME_TYPE3( _TyGraphLink, typename t_TyIter::_TyGraphLink, _TyAssertLink );
+    __ASSERT_SAME_TYPE( _TyGraphNode, typename t_TyIter::_TyGraphNode );
+    __ASSERT_SAME_TYPE( _TyGraphLink, typename t_TyIter::_TyGraphLink );
   }
 
   // Specialize the versions that take a "pass" path - we will take posession from the pass path object.
@@ -488,8 +488,8 @@ public:
     : _TyIterBase( static_cast< typename t_TyIter::_TyIterBase const & >( _r ) )
   {
     __TRANSFER_CONST( typename t_TyIter::_TyFIsConstIterator, _TyFIsConstIterator );
-    __ASSERT_SAME_TYPE3( _TyGraphNode, typename t_TyIter::_TyGraphNode, _TyAssertNode );
-    __ASSERT_SAME_TYPE3( _TyGraphLink, typename t_TyIter::_TyGraphLink, _TyAssertLink );
+    __ASSERT_SAME_TYPE( _TyGraphNode, typename t_TyIter::_TyGraphNode );
+    __ASSERT_SAME_TYPE( _TyGraphLink, typename t_TyIter::_TyGraphLink );
   }
 
   // specialize construction with a "pass" path iterator:
@@ -511,8 +511,8 @@ public:
   operator = ( t_TyIter const & _r )
   {
     __TRANSFER_CONST( _TyFIsConstIterator, typename t_TyIter::_TyFIsConstIterator );
-    __ASSERT_SAME_TYPE3( _TyGraphNode, typename t_TyIter::_TyGraphNode, _TyAssertNode );
-    __ASSERT_SAME_TYPE3( _TyGraphLink, typename t_TyIter::_TyGraphLink, _TyAssertLink );
+    __ASSERT_SAME_TYPE( _TyGraphNode, typename t_TyIter::_TyGraphNode );
+    __ASSERT_SAME_TYPE( _TyGraphLink, typename t_TyIter::_TyGraphLink );
     // call base class:
     _TyIterBase::operator = ( static_cast< typename t_TyIter::_TyIterBase const & >( _r ) );
     return *this;

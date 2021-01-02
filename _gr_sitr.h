@@ -91,7 +91,6 @@ public:
     }
   }
 
-#ifdef _STLP_MEMBER_TEMPLATES
   template < class t_TySafeNodeIter >
   explicit _graph_node_iterator_base_safe( const t_TySafeNodeIter & _r ) _BIEN_NOTHROW
     : _TyIterBase( static_cast< _TyGraphNodeBase * >( 0 ) )
@@ -102,15 +101,10 @@ public:
       _Reference( _r.PGNBCur() );
     }
   }
-#endif //_STLP_MEMBER_TEMPLATES
 
   // Non-copying copy constructor - this for allocator passing - allows generic wrapper.
-#ifdef _STLP_MEMBER_TEMPLATES
   template < class t_TySafeNodeIter >
   explicit _graph_node_iterator_base_safe( const t_TySafeNodeIter & _r, std::false_type ) _BIEN_NOTHROW
-#else //_STLP_MEMBER_TEMPLATES
-  explicit _graph_node_iterator_base_safe( const _TyThis & _r, std::false_type ) _BIEN_NOTHROW
-#endif //_STLP_MEMBER_TEMPLATES
     : _TyIterBase( static_cast< _TyGraphNodeBase * >( 0 ) )
   {
     _init();
@@ -132,13 +126,9 @@ public:
     return static_cast< t_TyGraphNodeSafe * >( _TyIterBase::m_pgnbCur );
   }
 
-#ifdef _STLP_MEMBER_TEMPLATES
   // Once again this can be misused when multiple graph types ( safe and non-safe ) are mixed.
   template < class t_TyNodeIter >
   _TyThis & operator = ( const t_TyNodeIter & _r ) _BIEN_NOTHROW
-#else //_STLP_MEMBER_TEMPLATES
-  _TyThis & operator = ( const _TyThis & _r ) _BIEN_NOTHROW
-#endif //_STLP_MEMBER_TEMPLATES
   {
     SetPGNBCur( _r.PGNBCur() );
     return *this;
@@ -169,14 +159,10 @@ public:
     (_TyIterBase::m_pgnbCur = _pgnb)->PushConnection( &m_gclNode );
   }
 
-#ifdef _STLP_MEMBER_TEMPLATES
   // Set to value of passed iterator - assume currently populated link - won't throw.
   // Typesafe problem when multiple graph types ( safe and non-safe ) are mixed.
   template < class t_TyNodeIter >
   void      Set_Populated( const t_TyNodeIter & _r ) _BIEN_NOTHROW
-#else //_STLP_MEMBER_TEMPLATES
-  void      Set_Populated( const _TyThis & _r ) _BIEN_NOTHROW
-#endif //_STLP_MEMBER_TEMPLATES
   {
     SetPGNBCur_Populated( _r.PGNBCur() );
   }
@@ -210,7 +196,6 @@ public:
       GoParent( _u );
   }
 
-#ifdef _STLP_MEMBER_TEMPLATES
   // make converion safe by catching any non-_TyThis objects - i.e. no derived-base conversion:
   template < class t_TySwap >
   void
@@ -221,15 +206,6 @@ public:
     SetPGNBCur( _r._TyIterBase::PGNBCur() );
     _r.SetPGNBCur( pgnbCur );
   }
-#else //_STLP_MEMBER_TEMPLATES
-  void
-  swap( _TyThis & _r ) _BIEN_NOTHROW
-  {
-    _TyGraphNodeBase * pgnbCur = PGNBCur();
-    SetPGNBCur( _r.PGNBCur() );
-    _r.SetPGNBCur( pgnbCur );
-  }
-#endif //_STLP_MEMBER_TEMPLATES
 };
 
 template < class t_TyGraphNodeBase, class t_TyGraphLinkBase >
@@ -344,12 +320,8 @@ protected:
     }
   }
 
-#ifdef _STLP_MEMBER_TEMPLATES
   template < class t_TyLinkPosIter >
   explicit _graph_link_pos_iterator_base_safe( const t_TyLinkPosIter & _r ) _BIEN_NOTHROW
-#else //_STLP_MEMBER_TEMPLATES
-  explicit _graph_link_pos_iterator_base_safe( const _TyThis & _r ) _BIEN_NOTHROW
-#endif //_STLP_MEMBER_TEMPLATES
     : _TyIterBase( (_TyGraphLinkBase **)0 )
   {
     _init();
@@ -359,12 +331,8 @@ protected:
     }
   }
 
-#ifdef _STLP_MEMBER_TEMPLATES
   template < class t_TyLinkPosIter >
   explicit _graph_link_pos_iterator_base_safe( const t_TyLinkPosIter & _r, std::false_type ) _BIEN_NOTHROW
-#else //_STLP_MEMBER_TEMPLATES
-  explicit _graph_link_pos_iterator_base_safe( const _TyThis & _r, std::false_type ) _BIEN_NOTHROW
-#endif //_STLP_MEMBER_TEMPLATES
     : _TyIterBase( (_TyGraphLinkBase **)0 )
   {
     _init();
@@ -551,7 +519,6 @@ public:
   }
 
   // Operations between link iterators:
-#ifdef _STLP_MEMBER_TEMPLATES
   template < class t_TyLinkIterator >
   void  ExchangeSiblingParents( t_TyLinkIterator const & _rSiblingParent ) const _BIEN_NOTHROW
   {
@@ -566,35 +533,7 @@ public:
     Assert( _TyIterBase::PGLBCur()->m_pgnbNodeChild == _rSiblingChild._TyIterBase::PGLBCur()->m_pgnbNodeChild );
     _TyGraphLinkBase::ExchangeChildren( _TyIterBase::PGLBCur(), _rSiblingChild._TyIterBase::PGLBCur() );
   }
-#else //_STLP_MEMBER_TEMPLATES
-  void  ExchangeSiblingParents( _TyThis const & _rSiblingParent ) const _BIEN_NOTHROW
-  {
-    Assert( &_rSiblingParent != this );
-    Assert( PGLBCur()->m_pgnbNodeChild == _rSiblingParent.PGLBCur()->m_pgnbNodeChild );
-    _TyGraphLinkBase::ExchangeParents( PGLBCur(), _rSiblingParent.PGLBCur() );
-  }
-  void  ExchangeSiblingChildren( _TyThis const & _rSiblingChild ) const _BIEN_NOTHROW
-  {
-    Assert( &_rSiblingChild != this );
-    Assert( PGLBCur()->m_pgnbNodeChild == _rSiblingChild.PGLBCur()->m_pgnbNodeChild );
-    _TyGraphLinkBase::ExchangeChildren( PGLBCur(), _rSiblingChild.PGLBCur() );
-  }
 
-  void  ExchangeSiblingParents( _TyLinkIdentIter const & _rlpiSiblingParent ) const _BIEN_NOTHROW
-  {
-    Assert( &_rSiblingParent != this );
-    Assert( PGLBCur()->m_pgnbNodeChild == _rSiblingParent.PGLBCur()->m_pgnbNodeChild );
-    _TyGraphLinkBase::ExchangeParents( PGLBCur(), _rSiblingParent.PGLBCur() );
-  }
-  void  ExchangeSiblingChildren( _TyLinkIdentIter const & _rlpiSiblingChild ) const _BIEN_NOTHROW
-  {
-    Assert( &_rSiblingChild != this );
-    Assert( PGLBCur()->m_pgnbNodeChild == _rSiblingChild.PGLBCur()->m_pgnbNodeChild );
-    _TyGraphLinkBase::ExchangeChildren( PGLBCur(), _rSiblingChild.PGLBCur() );
-  }
-#endif //_STLP_MEMBER_TEMPLATES
-
-#ifdef _STLP_MEMBER_TEMPLATES
   template < class t_TyLinkPosIterator >
   _TyThis & operator = ( t_TyLinkPosIterator const & _r ) _BIEN_NOTHROW
   {
@@ -612,9 +551,7 @@ public:
   {
     SetPPGLBCur_Populated( _r.PPGLBCur_Child() );
   }
-#endif //_STLP_MEMBER_TEMPLATES
 
-#ifdef _STLP_MEMBER_TEMPLATES
   // Catch any non-_TyThis types:
   template < class t_TySwap >
   void
@@ -625,15 +562,6 @@ public:
     SetPPGLBCur( _r._TyIterBase::PPGLBCur() );
     _r.SetPPGLBCur( ppglbCur );
   }
-#else //_STLP_MEMBER_TEMPLATES
-  void
-  swap( _TyThis & _r ) _BIEN_NOTHROW
-  {
-    _TyGraphLinkBase ** ppglbCur = PPGLBCur();
-    SetPPGLBCur( _r.PPGLBCur() );
-    _r.SetPPGLBCur( ppglbCur );
-  }
-#endif //_STLP_MEMBER_TEMPLATES
 };
 
 // This iterator maintains a link identity within either the child or the parent list.
@@ -705,12 +633,8 @@ public:
   }
 
 // Init with iterator that has an allocator:
-#ifdef _STLP_MEMBER_TEMPLATES
   template < class t_TyLinkIdentIter >
   explicit _graph_link_ident_iterator_base_safe( const t_TyLinkIdentIter & _r ) _BIEN_NOTHROW
-#else //_STLP_MEMBER_TEMPLATES
-  explicit _graph_link_ident_iterator_base_safe( const _TyThis & _r ) _BIEN_NOTHROW
-#endif //_STLP_MEMBER_TEMPLATES
     : _TyIterBase( static_cast< _TyGraphLinkBase * >( 0 ) )
   { 
     _init();
@@ -720,12 +644,8 @@ public:
     }
   }
 
-#ifdef _STLP_MEMBER_TEMPLATES
   template < class t_TyLinkIdentIter >
   explicit _graph_link_ident_iterator_base_safe( const t_TyLinkIdentIter & _r, std::false_type ) _BIEN_NOTHROW
-#else //_STLP_MEMBER_TEMPLATES
-  explicit _graph_link_ident_iterator_base_safe( const _TyThis & _r, std::false_type ) _BIEN_NOTHROW
-#endif //_STLP_MEMBER_TEMPLATES
     : _TyIterBase( static_cast< _TyGraphLinkBase * >( 0 ) )
   { 
     _init();
@@ -844,7 +764,6 @@ public:
     return *this;
   }
 
-#ifdef _STLP_MEMBER_TEMPLATES
   // Catch any non-_TyThis types:
   template < class t_TySwap >
   void
@@ -855,15 +774,6 @@ public:
     SetPGLBCur( _r.PGLBCur() );
     _r.SetPGLBCur( pglbCur );
   }
-#else //_STLP_MEMBER_TEMPLATES
-  void
-  swap( _TyThis & _r ) _BIEN_NOTHROW
-  {
-    _TyGraphLinkBase * pglbCur = PGLBCur();
-    SetPGLBCur( _r.PGLBCur() );
-    _r.SetPGLBCur( pglbCur );
-  }
-#endif //_STLP_MEMBER_TEMPLATES
 };
 
 // Path iterator - maintains path.
@@ -940,13 +850,6 @@ protected:
               _ppnbAppend = _ppnbAppend->m_ppnbNext )
         {
           _ppnsNew.allocate();
-#ifndef _BIEN_USE_EXCEPTIONS
-          if ( !_ppnsNew )
-          {
-            _DestroyPath( _pppnbTailOld );
-            return;
-          }
-#endif //!_BIEN_USE_EXCEPTIONS
           new ( _ppnsNew ) t_TyPathNodeSafe( *_ppnbAppend );
 
           _ppnsNew->push_back_node( _TyBase::m_pppnbTail );
@@ -956,13 +859,6 @@ protected:
           __SDP_TRANSFER(_ppnsNew);
         }
         _ppnsNew.allocate();
-#ifndef _BIEN_USE_EXCEPTIONS
-        if ( !_ppnsNew )
-        {
-          _DestroyPath( _pppnbTailOld );
-          return;
-        }
-#endif //!_BIEN_USE_EXCEPTIONS
         new ( _ppnsNew ) t_TyPathNodeSafe( *_ppnbAppend );
         Assert( !_ppnsNew->m_pglbLink );
 
@@ -1014,13 +910,6 @@ protected:
             )
         {
           _ppnsNew.allocate( );
-#ifndef _BIEN_USE_EXCEPTIONS
-          if ( !_ppnsNew )
-          {
-            _DestroyPath( _pppnbTailOld );
-            return;
-          }
-#endif //!_BIEN_USE_EXCEPTIONS
           new ( _ppnsNew ) t_TyPathNodeSafe( _ppnbAppend->m_pgnbNode, _pglbNext );
 
           _ppnsNew->PGNS()->PushConnection( &( _ppnsNew->m_gclNode ) );
@@ -1046,12 +935,8 @@ protected:
     Assert( _TyBase::valid( 0 ) );
   }
 
-#ifdef _STLP_MEMBER_TEMPLATES
   template < class _TyPathIter >
   void  _OverwritePath( _TyPathIter const & _r )
-#else //_STLP_MEMBER_TEMPLATES
-  void  _OverwritePath( _TyThis const & _r )
-#endif //_STLP_MEMBER_TEMPLATES
   { 
     _OverwritePath( _r.m_ppnbHead, _r.m_pppnbTail, _r.m_uCount );
   }
@@ -1103,13 +988,6 @@ protected:
         {
           _pppnbCopyUntil = _TyPathNodeBase::PPPNBGetPrevPrevNext( _pppnbCopyUntil );
           _ppnsNew.allocate( );
-#ifndef _BIEN_USE_EXCEPTIONS
-          if ( !_ppnsNew )
-          {
-            _DestroyPath( _pppnbTailOld );
-            return;
-          }
-#endif //!_BIEN_USE_EXCEPTIONS
           new ( _ppnsNew ) t_TyPathNodeSafe( **_pppnbCopyUntil );
 
           if ( _ppnsNew->m_pglbLink )
@@ -1286,16 +1164,10 @@ public:
   }
 
 // Construction with a path and a different allocator:
-#ifdef _STLP_MEMBER_TEMPLATES
   template < class _TyPathIter >
   explicit _graph_path_iterator_base_safe(  
     _TyPathIter const & _r,
     _TyPathNodeSafeAllocatorAsPassed const & _allocPathNode )
-#else //_STLP_MEMBER_TEMPLATES
-  explicit _graph_path_iterator_base_safe(  
-    _TyThis const & _r,
-    _TyPathNodeSafeAllocatorAsPassed const & _allocPathNode )
-#endif //_STLP_MEMBER_TEMPLATES
     : _TyBaseAllocPathNodeSafe( _allocPathNode )
   {
     _AppendPath( _r.m_ppnbHead );
@@ -1344,7 +1216,6 @@ public:
     _AppendLinkPosIter( static_cast< _TyGraphLinkPosIter const & >( _r ) );
   }
 
-#ifdef _STLP_MEMBER_TEMPLATES
   template < class _TyPathIter >
   explicit _graph_path_iterator_base_safe( _TyPathIter const & _r )
     : _TyBaseAllocPathNodeSafe( _r._GetPNSAllocatorAsPassed() )
@@ -1353,16 +1224,10 @@ public:
     _AppendPath( _r.m_ppnbHead );
     _TyBase::m_uCount = _r._TyBase::m_uCount; // throwsafe
   }
-#endif //_STLP_MEMBER_TEMPLATES
 
-#ifdef _STLP_MEMBER_TEMPLATES
   template < class _TyPathIter >
   explicit _graph_path_iterator_base_safe( 
     _TyPathIter const & _r, std::false_type ) _BIEN_NOTHROW
-#else //_STLP_MEMBER_TEMPLATES
-  explicit _graph_path_iterator_base_safe( 
-    _TyThis const & _r, std::false_type ) _BIEN_NOTHROW
-#endif //_STLP_MEMBER_TEMPLATES
     : _TyBaseAllocPathNodeSafe( _r._GetPNSAllocatorAsPassed() )
   {
     // This does not copy the path - just gets the allocator.
@@ -1523,7 +1388,6 @@ public:
     return *this;
   }
 
-#ifdef _STLP_MEMBER_TEMPLATES
   template < class _TyIter >
   _TyThis & operator = ( _TyIter const & _r ) _BIEN_NOTHROW
   {
@@ -1531,9 +1395,7 @@ public:
     _OverwritePath( _r );
     return *this;
   }
-#endif //_STLP_MEMBER_TEMPLATES
 
-#ifdef _STLP_MEMBER_TEMPLATES
   // Safe version - exact matching of templates - no derived->base conversion:
   template < class t_TySwap >
   void
@@ -1542,13 +1404,6 @@ public:
     __ASSERT_SAME_TYPE( t_TySwap, _TyThis );
     _TyBase::swap( static_cast< _TyBase& >( _r ) );
   }
-#else //_STLP_MEMBER_TEMPLATES
-  void
-  swap( _TyThis & _r ) _BIEN_NOTHROW
-  {
-    _TyBase::swap( static_cast< _TyBase& >( _r ) );
-  }
-#endif //_STLP_MEMBER_TEMPLATES
 
 #if 0
   bool valid( bool _fCheckCount = true ) const

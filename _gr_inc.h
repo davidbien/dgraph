@@ -25,29 +25,19 @@
 #include "_trace.h"
 
 #ifndef __DGRAPH_DEFAULT_ALLOCATOR
-#if defined(_USE_STLPORT) && !defined(NDEBUG)
-#define __DGRAPH_DEFAULT_ALLOCATOR __STD::_stlallocator< char, __STD::__debug_alloc< __STD::__malloc_alloc > >
-#define __DGRAPH_GET_ALLOCATOR(t) __STD::_stlallocator< t, __STD::__debug_alloc< __STD::__malloc_alloc > >
-#else // defined(_USE_STLPORT) && !defined(NDEBUG)
 #define __DGRAPH_DEFAULT_ALLOCATOR __STD::allocator< char >
 #define __DGRAPH_GET_ALLOCATOR(t) __STD::allocator< t >
-#endif // defined(_USE_STLPORT) && !defined(NDEBUG)
 #endif //__DGRAPH_DEFAULT_ALLOCATOR
 
 #ifndef __DBGTHROW_DEFAULT_ALLOCATOR
-#if defined(_USE_STLPORT) && !defined(NDEBUG)
-#define __DBGTHROW_DEFAULT_ALLOCATOR __STD::_stlallocator< char, __STD::__debug_alloc< __STD::__malloc_alloc > >
-#define __DBGTHROW_GET_ALLOCATOR(t) __STD::_stlallocator< t, __STD::__debug_alloc< __STD::__malloc_alloc > >
-#else // defined(_USE_STLPORT) && defined(NDEBUG)
 #define __DBGTHROW_DEFAULT_ALLOCATOR __STD::allocator< char >
 #define __DBGTHROW_GET_ALLOCATOR(t) __STD::allocator< t >
-#endif //defined(_USE_STLPORT) && defined(NDEBUG)
 #endif //!__DBGTHROW_DEFAULT_ALLOCATOR
 
 
 // Choose namespace:
 #define __DGRAPH_USE_NAMESPACE ns_dgraph // always use namespaces.
-#if !defined( _STLP_USE_NAMESPACES ) && !defined( __DGRAPH_USE_NAMESPACE )
+#if !defined( __DGRAPH_USE_NAMESPACE )
 #define __DGRAPH_GLOBALNAMESPACE
 #endif
 

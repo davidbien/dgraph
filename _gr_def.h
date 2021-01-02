@@ -10,11 +10,7 @@
 
 // This module defines the default graph objects.
 
-#if !defined( __DGRAPH_USE_STLPORT ) || defined( _BIEN_USE_EXCEPTIONS )
-//    !defined( __GR_DONTTHROWBADGRAPHERRORS )
-// Throw graph navigation errors.
 #define __GR_THROWGRAPHNAVERRORS
-#endif
 
 #include <_assert.h>
 
@@ -29,10 +25,10 @@ __DGRAPH_BEGIN_NAMESPACE
 
 #ifdef __GR_THROWGRAPHNAVERRORS
 
-class _graph_nav_except : public std::_t__Named_exception< __DGRAPH_DEFAULT_ALLOCATOR >
+class _graph_nav_except : public _t__Named_exception< __DGRAPH_DEFAULT_ALLOCATOR >
 {
   typedef _graph_nav_except _TyThis;
-  typedef std::_t__Named_exception< __DGRAPH_DEFAULT_ALLOCATOR > _TyBase;
+  typedef _t__Named_exception< __DGRAPH_DEFAULT_ALLOCATOR > _TyBase;
 public:
   _graph_nav_except( const char * _pc )
     : _TyBase( _pc ) 

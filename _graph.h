@@ -12,9 +12,7 @@
 
 __DGRAPH_BEGIN_NAMESPACE
 
-#ifndef __DGRAPH_USE_STLPORT
 #define __DGRAPH_INSTANCED_ALLOCATORS // Only STLport supports instanceless allocators for its STL.
-#endif
 
 // need a define to allow instanced allocators ( they are rare ).
 #ifdef __DGRAPH_INSTANCED_ALLOCATORS

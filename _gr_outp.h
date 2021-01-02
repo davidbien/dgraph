@@ -10,23 +10,14 @@
 
 // This module defines the graph binary output iterator.
 
-#if !defined( __DGRAPH_USE_STLPORT ) || defined( _BIEN_USE_EXCEPTIONS )
-//    !defined( __GR_DONTTHROWBADGRAPHERRORS )
-#define __GR_THROWBADGRAPHERRORS
-#endif
-
-#ifdef __GR_THROWBADGRAPHERRORS
-// We use the SGI exception stuff:
 #include <stdexcept>
-#endif //__GR_THROWBADGRAPHERRORS
 
 __DGRAPH_BEGIN_NAMESPACE
 
-#ifdef __GR_THROWBADGRAPHERRORS
-class bad_graph : public std::_t__Named_exception< __DGRAPH_DEFAULT_ALLOCATOR >
+class bad_graph : public _t__Named_exception< __DGRAPH_DEFAULT_ALLOCATOR >
 {
   typedef bad_graph _TyThis;
-  typedef std::_t__Named_exception< __DGRAPH_DEFAULT_ALLOCATOR > _TyBase;
+  typedef _t__Named_exception< __DGRAPH_DEFAULT_ALLOCATOR > _TyBase;
 public:
   bad_graph( const char * _pc )
     : _TyBase( _pc ) 
@@ -37,10 +28,6 @@ public:
   {
   }
 };
-  
-#else //__GR_THROWBADGRAPHERRORS
-#error This not currently supported. Need error propagation - not too tough, but...
-#endif //__GR_THROWBADGRAPHERRORS
 
 // Function that knows how to write raw data to a stream:
 template < class t_TyOutputStream, class t_TyWrite >

@@ -62,7 +62,7 @@ class _graph_iterator_pass
 
   // Only the copy constructor is public:
   template < class t_TyIterPass >
-    _graph_iterator_pass( t_TyIterPass & _r ) __STLP_NOTHROW
+    _graph_iterator_pass( t_TyIterPass & _r ) noexcept(true)
     : _TyBase( 0 )  // We are initially empty.
     {
       // Swap our existence with the passed:
@@ -72,7 +72,7 @@ class _graph_iterator_pass
     }
 
   template < class t_TyIterPass >
-    _TyThis & operator = ( t_TyIterPass & _r ) __STLP_NOTHROW
+    _TyThis & operator = ( t_TyIterPass & _r ) noexcept(true)
   {
     __TRANSFER_CONST( typename t_TyIterPass::_TyFIsConstIterator, 
                       _TyFIsConstIterator );
@@ -118,7 +118,7 @@ public:
 
   // Only the copy constructor is public:
   template < class t_TyPathPass >
-  _graph_path_iterator_pass( t_TyPathPass & _r ) __STLP_NOTHROW
+  _graph_path_iterator_pass( t_TyPathPass & _r ) noexcept(true)
     : _TyBase( _r, std::false_type() ) // We are initially empty.
   {
     __TRANSFER_CONST( typename t_TyPathPass::_TyFIsConstIterator, 
@@ -127,7 +127,7 @@ public:
   }
 
   template < class t_TyPathPass >
-  _TyThis & operator = ( t_TyPathPass & _r ) __STLP_NOTHROW
+  _TyThis & operator = ( t_TyPathPass & _r ) noexcept(true)
   {
     __TRANSFER_CONST( typename t_TyPathPass::_TyFIsConstIterator, 
                       _TyFIsConstIterator );

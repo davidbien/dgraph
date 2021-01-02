@@ -102,7 +102,7 @@ public:
   {
   }
 
-  t_TyShadowObject *  PSO() const __STLP_NOTHROW
+  t_TyShadowObject *  PSO() const noexcept(true)
   {
     return static_cast< t_TyShadowObject* >( m_psos );
   }

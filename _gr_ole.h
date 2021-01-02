@@ -83,7 +83,7 @@ public:
     }
   }
 
-  ~_ole_graph_element() __STLP_NOTHROW
+  ~_ole_graph_element() noexcept(true)
   {
     m_punk->Release();
   }

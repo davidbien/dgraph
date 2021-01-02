@@ -114,7 +114,7 @@ public:
     _RElInt()._TyShadowElement::_TyShadowElement( _r );
   }
 
-  t_TyShadowObject *  PSO() const __STLP_NOTHROW
+  t_TyShadowObject *  PSO() const noexcept(true)
   {
     return static_cast< t_TyShadowObject* >( m_psos );
   }
@@ -160,17 +160,15 @@ public:
     {
       _CopyOnWrite();
     }
-#ifdef _BIEN_USE_EXCEPTIONS
     catch( ... )
     {
       // This graph is inconsistent - throw an inconsistent graph exception:
       throw inconsistent_graph( "_cpwt_graph_element::_element_deinit(): Throw during copy-on-write." );
     }
-#endif //_BIEN_USE_EXCEPTIONS
   }
 
 protected:
-  _TyShadowElement & _RElInt() const __STLP_NOTHROW
+  _TyShadowElement & _RElInt() const noexcept(true)
   {
     return *((_TyShadowElement*)m_cpEl);
   }

@@ -22,9 +22,7 @@
 // Full thread-safety could ( and will ) be implemented as an alternate set of
 //  graph base classes ( as described above ).
 
-#ifndef __DGRAPH_USE_STLPORT
 #include "_aloctrt.h"
-#endif //!__DGRAPH_USE_STLPORT
 
 #include "_gr_alst.h"
 #include "_gr_iter.h"
@@ -869,7 +867,7 @@ public:
   // fd (file descriptor) iterator - faster than ostream iterator - at least a bit:
   // Default is const and doesn't allow unconstructed ( unconnected ) links to be written:
   typedef _binary_output_object<  _TyGraphNode, _TyGraphLink, 
-                                  _fdout_object< _fd_RawElIO >,
+                                  _file_out_object< _file_RawElIO >,
                                   t_TyAllocatorPathNodeBase, 
                                   false, false >                    _TyBinaryFiledesOutput;
   typedef typename _TyBinaryFiledesOutput::_TyOutputStreamBase      _TyBinaryFiledesOutputBase;
@@ -903,7 +901,7 @@ public:
   // fd (file descriptor) iterator - faster than istream iterator:
   // Default is const and doesn't allow unconstructed ( unconnected ) links to be read:
   typedef _binary_input_object< _TyGraphNode, _TyGraphLink, 
-                                _fdin_object< _fd_RawElIO >, 
+                                _file_in_object< _file_RawElIO >, 
                                 false >                                     _TyBinaryFiledesInput;
   typedef typename _TyBinaryFiledesInput::_TyInputObjectBase                _TyBinaryFiledesInputBase;
   typedef _graph_input_iter_base< _TyBinaryFiledesInputBase, _TyGraphBaseBase, 

@@ -1,5 +1,4 @@
-#ifndef __GR_FDIO_H
-#define __GR_FDIO_H
+#pragma once
 
 //          Copyright David Lawrence Bien 1997 - 2020.
 // Distributed under the Boost Software License, Version 1.0.
@@ -7,11 +6,14 @@
 //          https://www.boost.org/LICENSE_1_0.txt).
 
 // _gr_fdio.h
-// graph I/O through file descriptors.
+// graph I/O through files - originally through file descriptors then ported to Windows files.
 // dbien: 21APR2020
 
 #include <fcntl.h>
+#ifndef WIN32
 #include <unistd.h>
+#endif //!WIN32
+#include "_compat.h"
 #include "_gr_inc.h"
 
 __DGRAPH_BEGIN_NAMESPACE
@@ -19,193 +21,175 @@ __DGRAPH_BEGIN_NAMESPACE
 // Specialize for fdout - default version just writes raw memory:
 template < class t_TyWrite >
 __INLINE void
-_RawWriteGraphEl( int _fd, t_TyWrite const & _rEl )
+_RawWriteGraphEl( vtyFileHandle _hFile, t_TyWrite const & _rEl )
 {	
 	if ( sizeof( _rEl ) )
 	{
-    PrepareErrNo();
-    ssize_t sstWrit = ::write( _fd, (const void*)&_rEl, sizeof( _rEl ) );
+    size_t stWritten;
+    int iWriteResult = FileWrite(_hFile, &_rEl, sizeof( _rEl ), &stWritten );
     __THROWPT( e_ttFileOutput );
-    if ( sstWrit != sizeof( _rEl ) )
-      THROWNAMEDEXCEPTIONERRNO( GetLastErrNo(), "Failed to write entire element." );
+    if ( !!iWriteResult || ( stWritten != sizeof( _rEl ) ) )
+      THROWNAMEDEXCEPTIONERRNO( GetLastErrNo(), ( stWritten != sizeof( _rEl ) ) ? "Didn't write all the data? WTF?" : "FileWrite() failed." );
 	}
 }
 
 // Specialize for fdin - default version just reads raw memory:
 template < class t_TyRead >
 __INLINE void
-_RawReadGraphEl( int _fd, t_TyRead & _rEl )
+_RawReadGraphEl( vtyFileHandle _hFile, t_TyRead & _rEl )
 {	
 	if ( sizeof( _rEl ) )
 	{
-    PrepareErrNo();
-    ssize_t sstRead = ::read( _fd, (void*)&_rEl, sizeof( _rEl ) );
+    size_t stRead;
+    int iReadResult = FileRead(_hFile, &_rEl, sizeof( _rEl ), &stRead );
     __THROWPT( e_ttFileInput );
-    if ( sstRead != sizeof( _rEl ) )
-      THROWNAMEDEXCEPTIONERRNO( GetLastErrNo(), "Failed to read entire element." );
+    if ( !!iReadResult || ( stRead != sizeof( _rEl ) ) )
+      THROWNAMEDEXCEPTIONERRNO( GetLastErrNo(), ( stRead != sizeof( _rEl ) ) ? "EOF before end of value." : "FileRead() failed." );
 	}
 }
 
-struct _fd_RawElIO
+struct _file_RawElIO
 {
   template < class t_TyEl >
-  void Write( int _fd, t_TyEl const & _rel )
+  void Write( vtyFileHandle _hFile, t_TyEl const & _rel )
   {
-    _RawWriteGraphEl( _fd, _rel );
+    _RawWriteGraphEl( _hFile, _rel );
   }
   template < class t_TyEl >
-  void Read( int _fd, t_TyEl & _rel )
+  void Read( vtyFileHandle _hFile, t_TyEl & _rel )
   {
-    _RawReadGraphEl( _fd, _rel );
+    _RawReadGraphEl( _hFile, _rel );
   }
 };
 
 template <  class t_TyOutputNodeEl,
             class t_TyOutputLinkEl = t_TyOutputNodeEl >
-struct _fdout_object
+struct _file_out_object
 {
-  typedef int _TyInitArg;
+  typedef vtyFileHandle _TyInitArg;
   typedef off_t _TyStreamPos;
   typedef t_TyOutputNodeEl _TyIONodeEl;
   typedef t_TyOutputLinkEl _TyIOLinkEl;
 
-  int m_fd{-1}; // This object doesn't own the lifetime of the open file.
+  vtyFileHandle m_hFile{vkhInvalidFileHandle}; // This object doesn't own the lifetime of the open file.
   t_TyOutputNodeEl  m_one;
   t_TyOutputLinkEl  m_ole;
 
-  _fdout_object( _fdout_object const & ) = delete;
-  _fdout_object() = delete;
-	_fdout_object(  int _fd,
+  _file_out_object( _file_out_object const & ) = delete;
+  _file_out_object() = delete;
+	_file_out_object(  vtyFileHandle _hFile,
                   t_TyOutputNodeEl const & _rone,
                   t_TyOutputLinkEl const & _role )
-		: m_fd( _fd ),
+		: m_hFile( _hFile ),
       m_one( _rone ),
       m_ole( _role )
 	{
       __THROWPT( e_ttMemory ); // in the cases where where are dynamic members within m_one or m_ole.
 	}
-	_fdout_object(  int _fd,
+	_file_out_object(  vtyFileHandle _hFile,
                   t_TyOutputNodeEl && _rrone,
                   t_TyOutputLinkEl && _rrole )
-		: m_fd( _fd ),
+		: m_hFile( _hFile ),
       m_one( std::move( _rrone ) ),
       m_ole( std::move( _rrole ) )
 	{
 	}
-
 	_TyStreamPos TellP() const
   {
-    PrepareErrNo();
-    off_t off = lseek( m_fd, 0, SEEK_CUR );
     __THROWPT( e_ttFileOutput );
-    if ( -1 == off )
-      THROWNAMEDEXCEPTIONERRNO( GetLastErrNo(), "lseek() failed." );
-    return off;
+    return NFileSeekAndThrow( m_hFile, 0, vkSeekCur );
   }
 	void SeekP( _TyStreamPos _sp )	
   {
-    PrepareErrNo();
-    off_t off = lseek( m_fd, _sp, SEEK_SET );
+    int iSeekResult = FileSeek( m_hFile, _sp, vkSeekBegin );
     __THROWPT( e_ttFileOutput );
-    if ( -1 == off )
-      THROWNAMEDEXCEPTIONERRNO( GetLastErrNo(), "lseek() failed." );
+    if ( !!iSeekResult )
+      THROWNAMEDEXCEPTIONERRNO( GetLastErrNo(), "FileSeek() failed." );
   }
-
 	void Write( const void * _pv, size_t _st )
 	{
     if ( _st )
     {
-      PrepareErrNo();
-      ssize_t sstWrit = ::write( m_fd, _pv, _st );
+      size_t stWritten;
+      int iWrite = FileWrite( m_hFile, _pv, _st, &stWritten );
       __THROWPT( e_ttFileOutput );
-      if ( sstWrit != _st )
-        THROWNAMEDEXCEPTIONERRNO( GetLastErrNo(), "::write() failed." );
+      if ( !!iWrite || ( stWritten != _st ) )
+        THROWNAMEDEXCEPTIONERRNO( GetLastErrNo(), ( stWritten != _st ) ? "Didn't write all the data? WTF?" : "FileWrite() failed." );
     }
 	}
 
 	template < class t_TyEl >
 	void WriteNodeEl( t_TyEl const & _rel )
 	{
-    m_one.Write( m_fd, _rel );
+    m_one.Write( m_hFile, _rel );
 	}
 	template < class t_TyEl >
 	void WriteLinkEl( t_TyEl const & _rel )
 	{
-    m_ole.Write( m_fd, _rel );
+    m_ole.Write( m_hFile, _rel );
 	}
 };
 
 template <  class t_TyInputNodeEl,
             class t_TyInputLinkEl = t_TyInputNodeEl >
-struct _fdin_object
+struct _file_in_object
 {
-	typedef int _TyInitArg;
+	typedef vtyFileHandle _TyInitArg;
 	typedef off_t _TyStreamPos;
 	typedef t_TyInputNodeEl _TyIONodeEl;
 	typedef t_TyInputLinkEl _TyIOLinkEl;
 
-	int m_fd; // This object doesn't own the lifetime of the open file.
-
+	vtyFileHandle m_hFile{vkhInvalidFileHandle}; // This object doesn't own the lifetime of the open file.
   t_TyInputNodeEl m_ine;
   t_TyInputLinkEl m_ile;
 
-	_fdin_object(  int _fd,
-                t_TyInputNodeEl const & _rine,
-                t_TyInputLinkEl const & _rile )
-		: m_fd( _fd ),
+	_file_in_object(  vtyFileHandle _hFile,
+                    t_TyInputNodeEl const & _rine,
+                    t_TyInputLinkEl const & _rile )
+		: m_hFile( _hFile ),
       m_ine( _rine ),
       m_ile( _rile )
 	{
       __THROWPT( e_ttMemory ); // in the cases where where are dynamic members within m_ine or m_ile.
 	}
-	_fdin_object(  int _fd,
+	_file_in_object(  vtyFileHandle _hFile,
                 t_TyInputNodeEl && _rrine,
                 t_TyInputLinkEl && _rrile )
-		: m_fd( _fd ),
+		: m_hFile( _hFile ),
       m_ine( std::move( _rrine ) ),
       m_ile( std::move( _rrile ) )
 	{
 	}
-
 	_TyStreamPos TellG() const
 	{ 
-    PrepareErrNo();
-    off_t off = lseek( m_fd, 0, SEEK_CUR );
     __THROWPT( e_ttFileInput | e_ttFatal );
-    if ( -1 == off )
-      THROWNAMEDEXCEPTIONERRNO( GetLastErrNo(), "lseek() failed." );
-    return off;
+    return NFileSeekAndThrow( m_hFile, 0, vkSeekCur );
   }
 	void SeekG( _TyStreamPos _sp )	
   {
-    PrepareErrNo();
-    off_t off = lseek( m_fd, _sp, SEEK_SET );
+    int iSeekResult = FileSeek( m_hFile, _sp, vkSeekBegin );
     __THROWPT( e_ttFileInput | e_ttFatal );
-    if ( -1 == off )
-      THROWNAMEDEXCEPTIONERRNO( GetLastErrNo(), "lseek() failed." );
+    if ( !!iSeekResult )
+      THROWNAMEDEXCEPTIONERRNO( GetLastErrNo(), "FileSeek() failed." );
 	}
-
 	void Read( void * _pv, size_t _st )
 	{
-    PrepareErrNo();
-    ssize_t sstRead = ::read( m_fd, _pv, _st );
+    size_t stRead;
+    int iRead = FileRead(m_hFile, _pv, _st, &stRead);
     __THROWPT( e_ttFileInput );
-    if ( sstRead != _st )
-      THROWNAMEDEXCEPTIONERRNO( GetLastErrNo(), "read() failed.");
+    if ( !!iRead || (stRead != _st ) )
+      THROWNAMEDEXCEPTIONERRNO( GetLastErrNo(), ( stRead != _st ) ? "EOF before all data read." : "FileRead() failed.");
 	}
-
 	template < class t_TyEl >
 	void ReadNodeEl( t_TyEl & _rel )
 	{
-		m_ine.Read( m_fd, _rel );
+		m_ine.Read( m_hFile, _rel );
 	}
 	template < class t_TyEl >
 	void ReadLinkEl( t_TyEl & _rel )
 	{
-    	m_ile.Read( m_fd, _rel );
+    	m_ile.Read( m_hFile, _rel );
 	}
 };
 
 __DGRAPH_END_NAMESPACE
-
-#endif //__GR_FDIO_H

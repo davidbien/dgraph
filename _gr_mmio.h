@@ -1,5 +1,4 @@
-#ifndef __GR_MMIO_H
-#define __GR_MMIO_H
+#pragma once
 
 //          Copyright David Lawrence Bien 1997 - 2020.
 // Distributed under the Boost Software License, Version 1.0.
@@ -11,9 +10,13 @@
 // dbien: 21APR2020
 
 #include <fcntl.h>
+#include "_compat.h"
+#ifndef WIN32
 #include <unistd.h>
 #include <sys/mman.h>
+#endif //!WIN32
 #include "_gr_inc.h"
+#include "_fdobjs.h"
 
 __DGRAPH_BEGIN_NAMESPACE
 
@@ -70,8 +73,9 @@ struct _mmout_object
   typedef t_TyOutputLinkEl _TyIOLinkEl;
   static const size_t s_knGrowFileByBytes = t_knGrowFileByBytes;
 
-  int m_fd{-1}; // This object doesn't own the lifetime of the open file.
-  uint8_t * m_pbyMappedBegin{(uint8_t*)vkpvNullMapping};
+  vtyFileHandle m_hFile{vkhInvalidFileHandle}; // This object doesn't own the lifetime of the open file.
+  FileMappingObj m_fmoFile; // We do own the lifetime of our mapping however.
+  //uint8_t * m_pbyMappedBegin{(uint8_t*)vkpvNullMapping};
   uint8_t * m_pbyMappedCur{(uint8_t*)vkpvNullMapping};
   uint8_t * m_pbyMappedEnd{(uint8_t*)vkpvNullMapping};
 
@@ -80,19 +84,19 @@ struct _mmout_object
 
   _mmout_object( _mmout_object const & ) = delete;
   _mmout_object() = delete;
-	_mmout_object(  int _fd,
+	_mmout_object(  int _hFile,
                   t_TyOutputNodeEl const & _rone,
                   t_TyOutputLinkEl const & _role )
-		: m_fd( _fd ),
+		: m_hFile( _hFile ),
       m_one( _rone ),
       m_ole( _role )
 	{
     _OpenMap();
 	}
-	_mmout_object(  int _fd,
+	_mmout_object(  int _hFile,
                   t_TyOutputNodeEl && _rrone,
                   t_TyOutputLinkEl && _rrole )
-		: m_fd( _fd ),
+		: m_hFile( _hFile ),
       m_one( std::move( _rrone ) ),
       m_ole( std::move( _rrole ) )
 	{
@@ -100,32 +104,52 @@ struct _mmout_object
 	}
   ~_mmout_object() noexcept(false)
   {
+    Assert( m_fmoFile.FIsOpen() && ( vkhInvalidFileHandle != m_hFile ) );
+    if ( !m_fmoFile.FIsOpen() || ( vkhInvalidFileHandle == m_hFile ) )
+      return;
     bool fInUnwinding = !!std::uncaught_exceptions();
-    // We need to truncate the file to m_pbyMappedCur - m_pbyMappedBegin bytes.
-    PrepareErrNo();
-    int iTruncRet = ftruncate( m_fd, m_pbyMappedCur - m_pbyMappedBegin );
-    int errnoSaved = GetLastErrNo();
-    size_t stMapped = m_pbyMappedEnd - m_pbyMappedBegin;
-    uint8_t * pbyMapped = m_pbyMappedBegin;
-    m_pbyMappedBegin = (uint8_t*)vkpvNullMapping;
-    PrepareErrNo();
-    int iUnmap = ::munmap( pbyMapped, stMapped ); // We don't care if this fails pretty much.
-    Assert( !iUnmap );
-    __THROWPT_DTOR( e_ttFileOutput | e_ttFatal, fInUnwinding );
-    if ( ( -1 == iTruncRet ) && !fInUnwinding ) // This is the only failure we care about really since it results in the file being the wrong size.
-        THROWNAMEDEXCEPTIONERRNO( errnoSaved, "Failed to ftruncate m_fd[%d]", m_fd );
+    void * pvMappedSave = m_fmoFile.Pv();
+    int iCloseFileMapping = m_fmoFile.Close();
+    vtyErrNo errCloseFileMapping = !iCloseFileMapping ? vkerrNullErrNo : GetLastErrNo();
+    vtyErrNo errTruncate = vkerrNullErrNo;
+    if ( vkhInvalidFileHandle != m_hFile )
+    {
+      // We need to truncate the file to m_cpxMappedCur - m_pvMapped bytes.
+      size_t stSizeTruncate = m_pbyMappedCur - (uint8_t*)pvMappedSave;
+      int iTruncate = FileSetSize(m_hFile, stSizeTruncate);
+      vtyErrNo errTruncate = !iTruncate ? vkerrNullErrNo : GetLastErrNo();
+    }
+    vtyErrNo errFirst;
+    unsigned nError;
+    if ( ( (nError = 1), ( vkerrNullErrNo != ( errFirst = errTruncate ) ) ) || 
+         ( (nError = 2), ( vkerrNullErrNo != ( errFirst = errCloseFileMapping ) ) ) )
+    {
+      // Ensure that the errno is represented in the last error:
+      SetLastErrNo( errFirst );
+      if ( !fInUnwinding )
+      {
+        const char * pcThrow;
+        switch( nError )
+        {
+          case 1: pcThrow = "Error encountered truncating m_hFile[0x%lx]"; break;
+          case 2: pcThrow = "Error encountered closing file mapping m_hFile[0x%lx]"; break;
+          default: pcThrow = "Wh-what?! m_hFile[0x%lx]"; break;
+        }
+        THROWNAMEDEXCEPTIONERRNO( errFirst, pcThrow, (uint64_t)m_hFile );
+      }
+    }
+    if ( !fInUnwinding )
+      __THROWPT_DTOR( e_ttFileOutput | e_ttFatal, fInUnwinding );
   }
-
 	_TyStreamPos TellP() const
   {
-    return m_pbyMappedCur - m_pbyMappedBegin;
+    return m_pbyMappedCur - (uint8_t*)m_fmoFile.Pv();
   }
 	void SeekP( _TyStreamPos _sp )	
   {
     // We will let the caller set the position anywhere at all.
-    m_pbyMappedCur = m_pbyMappedBegin + _sp;
+    m_pbyMappedCur = (uint8_t*)m_fmoFile.Pv() + _sp;
   }
-
 	void Write( const void * _pv, size_t _st )
 	{
     if ( ssize_t( _st ) > ( m_pbyMappedEnd - m_pbyMappedCur ) )
@@ -133,7 +157,6 @@ struct _mmout_object
     memcpy( m_pbyMappedCur, _pv, _st );
     m_pbyMappedCur += _st;
 	}
-
 	template < class t_TyEl >
 	void WriteNodeEl( t_TyEl const & _rel )
 	{
@@ -163,55 +186,36 @@ struct _mmout_object
 protected:
   void _OpenMap()
   {
-    PrepareErrNo();
-    off_t offEnd = ::lseek( m_fd, s_knGrowFileByBytes-1, SEEK_SET );
+    int iResult = FileSetSize( m_hFile, s_knGrowFileByBytes ); // Set initial size.
     __THROWPT( e_ttFileOutput | e_ttFatal );
-    if ( -1 == offEnd )
-      THROWNAMEDEXCEPTIONERRNO( GetLastErrNo(), "Attempting to lseek() failed m_fd[%d].", m_fd );
-    PrepareErrNo();
-    ssize_t sstRet = ::write( m_fd, "Z", 1 ); // write a single byte to grow the file to s_knGrowFileByBytes.
+    if ( !!iResult )
+      THROWNAMEDEXCEPTIONERRNO(GetLastErrNo(), "FileSetSize() m_hFile[0x%lx]", (uint64_t)m_hFile);
+    m_fmoFile.SetHMMFile( MapReadWriteHandle( m_hFile ) );
     __THROWPT( e_ttFileOutput | e_ttFatal );
-    if ( -1 == sstRet )
-      THROWNAMEDEXCEPTIONERRNO( GetLastErrNo(), "Attempting to write() failed for m_fd[%d]", m_fd );
-    // No need to reset the file pointer to the beginning - and in fact we like it at the end in case someone were to actually try to write to it.
-    PrepareErrNo();
-    m_pbyMappedBegin = (uint8_t*)::mmap( 0, s_knGrowFileByBytes, PROT_READ | PROT_WRITE, MAP_SHARED, m_fd, 0 );
-    __THROWPT( e_ttFileOutput | e_ttFatal );
-    if ( m_pbyMappedBegin == vkpvNullMapping )
-      THROWNAMEDEXCEPTIONERRNO( GetLastErrNo(), "mmap() failed for m_fd[%d]", m_fd );
-    m_pbyMappedCur = m_pbyMappedBegin;
+    if ( !m_fmoFile.FIsOpen() )
+      THROWNAMEDEXCEPTIONERRNO(GetLastErrNo(), "Mapping failed m_hFile[0x%lx]", (uint64_t)m_hFile);
+    m_pbyMappedCur = (uint8_t*)m_fmoFile.Pv();
     m_pbyMappedEnd = m_pbyMappedCur + s_knGrowFileByBytes;
   }
   void _GrowMap( size_t _stByAtLeast )
   {
+    VerifyThrow( m_fmoFile.FIsOpen() && ( vkhInvalidFileHandle != m_hFile ) );
     size_t stGrowBy = ( ( ( _stByAtLeast - 1 ) / s_knGrowFileByBytes ) + 1 ) * s_knGrowFileByBytes;
-    size_t stMapped = m_pbyMappedEnd - m_pbyMappedBegin;
-    uint8_t * pbyOldMapping = m_pbyMappedBegin;
-    uint8_t * pbyOldMapCur = m_pbyMappedCur;
-    m_pbyMappedBegin = (uint8_t*)vkpvNullMapping;
+    size_t stMapped = m_pbyMappedEnd - (uint8_t*)m_fmoFile.Pv();
+    size_t stCurOffset = m_pbyMappedCur - (uint8_t*)m_fmoFile.Pv();
     m_pbyMappedCur = (uint8_t*)vkpvNullMapping;
     m_pbyMappedEnd = (uint8_t*)vkpvNullMapping;
-    PrepareErrNo();
-    int iRet = ::munmap( pbyOldMapping, stMapped );
-    Assert( !iRet ); // not much to do about this.
-    stMapped += stGrowBy;
-    PrepareErrNo();
-    iRet = ::lseek( m_fd, stMapped - 1, SEEK_SET );
+    (void)m_fmoFile.Close();
+    int iFileSetSize = FileSetSize(m_hFile, stMapped + stGrowBy);
     __THROWPT( e_ttFileOutput | e_ttFatal );
-    if ( -1 == iRet )
-      THROWNAMEDEXCEPTIONERRNO( GetLastErrNo(), "lseek() failed for m_fd[%d].", m_fd );
-    PrepareErrNo();
-    iRet = ::write( m_fd, "Z", 1 ); // just write a single byte to grow the file.
+    if (-1 == iFileSetSize)
+      THROWNAMEDEXCEPTIONERRNO( GetLastErrNo(), "FileSetSize() failed for m_hFile[0x%lx].", (uint64_t)m_hFile );
+    m_fmoFile.SetHMMFile( MapReadWriteHandle( m_hFile ) );
     __THROWPT( e_ttFileOutput | e_ttFatal );
-    if ( -1 == iRet )
-      THROWNAMEDEXCEPTIONERRNO( GetLastErrNo(), "write() failed for m_fd[%d].", m_fd );
-    PrepareErrNo();
-    m_pbyMappedBegin = (uint8_t*)::mmap( 0, stMapped, PROT_READ | PROT_WRITE, MAP_SHARED, m_fd, 0 );
-    __THROWPT( e_ttFileOutput | e_ttFatal );
-    if ( m_pbyMappedBegin == vkpvNullMapping )
-      THROWNAMEDEXCEPTIONERRNO( GetLastErrNo(), "mmap() failed for m_fd[%d].", m_fd );
-    m_pbyMappedEnd = m_pbyMappedBegin + stMapped;
-    m_pbyMappedCur = m_pbyMappedBegin + ( pbyOldMapCur - pbyOldMapping );
+    if ( !m_fmoFile.FIsOpen() )
+      THROWNAMEDEXCEPTIONERRNO(GetLastErrNo(), "Remapping the failed for m_hFile[0x%lx].", (uint64_t)m_hFile );
+    m_pbyMappedEnd = (uint8_t*)m_fmoFile.Pv() + stMapped;
+    m_pbyMappedCur = (uint8_t*)m_fmoFile.Pv() + stCurOffset;
   }
 };
 
@@ -224,45 +228,43 @@ struct _mmin_object
 	typedef t_TyInputNodeEl _TyIONodeEl;
 	typedef t_TyInputLinkEl _TyIOLinkEl;
 
-	int m_fd{-1}; // This object doesn't own the lifetime of the open file.
-  uint8_t * m_pbyMappedBegin{(uint8_t*)vkpvNullMapping};
-  uint8_t * m_pbyMappedCur{(uint8_t*)vkpvNullMapping};
-  uint8_t * m_pbyMappedEnd{(uint8_t*)vkpvNullMapping};
+	vtyFileHandle m_hFile{vkhInvalidFileHandle}; // This object doesn't own the lifetime of the open file.
+  FileMappingObj m_fmoFile; // We own the mapping.
+  const uint8_t * m_pbyMappedCur{(uint8_t*)vkpvNullMapping};
+  const uint8_t * m_pbyMappedEnd{(uint8_t*)vkpvNullMapping};
 
   t_TyInputNodeEl m_ine;
   t_TyInputLinkEl m_ile;
 
   _mmin_object( _mmin_object const & ) = delete;
   _mmin_object() = delete;
-	_mmin_object(  int _fd,
+	_mmin_object(  int _hFile,
                 t_TyInputNodeEl const & _rine,
                 t_TyInputLinkEl const & _rile )
-		: m_fd( _fd ),
+		: m_hFile( _hFile ),
       m_ine( _rine ),
       m_ile( _rile )
 	{
     _OpenMap();
 	}
-	_mmin_object(  int _fd,
+	_mmin_object(  int _hFile,
                 t_TyInputNodeEl && _rrine,
                 t_TyInputLinkEl && _rrile )
-		: m_fd( _fd ),
+		: m_hFile( _hFile ),
       m_ine( std::move( _rrine ) ),
       m_ile( std::move( _rrile ) )
 	{
     _OpenMap();
 	}
-
 	_TyStreamPos TellG() const
 	{
-    return m_pbyMappedCur - m_pbyMappedBegin;
+    return m_pbyMappedCur - (uint8_t*)m_fmoFile.Pv();
   }
 	void SeekG( _TyStreamPos _sp )	
   {
     // We allow seeking beyond the end - but Read will throw if we try to read there.
-    m_pbyMappedCur = m_pbyMappedBegin + _sp;
+    m_pbyMappedCur = (uint8_t*)m_fmoFile.Pv() + _sp;
 	}
-
 	void Read( void * _pv, size_t _st )
 	{
     __THROWPT( e_ttFileInput ); // should be able to recover from this.
@@ -271,7 +273,6 @@ struct _mmin_object
     memcpy( _pv, m_pbyMappedCur, _st );
     m_pbyMappedCur += _st;
 	}
-
 	template < class t_TyEl >
 	void ReadNodeEl( t_TyEl & _rel )
 	{
@@ -289,25 +290,26 @@ struct _mmin_object
 protected:
   void _OpenMap()
   {
+    VerifyThrow( vkhInvalidFileHandle != m_hFile );
     // Now get the size of the file and then map it.
-    PrepareErrNo();
-    struct stat statBuf;
-    int iStatResult = ::stat( m_fd, &statBuf );
-    if ( -1 == iStatResult )
-      THROWNAMEDEXCEPTIONERRNO( GetLastErrNo(), "stat() failed for m_fd[%d]", m_fd );
-    if ( !S_ISREG(statBuf.st_mode) )
-      THROWNAMEDEXCEPTIONERRNO( GetLastErrNo(), "m_fd[%d] is not a regular file, st_mode[0x%x].", m_fd, statBuf.st_mode );
-    // No need to reset the file pointer to the beginning - and in fact we like it at the end in case someone were to actually try to read from it.
-    PrepareErrNo();
-    m_pbyMappedBegin = (uint8_t*)mmap( 0, statBuf.st_size, PROT_READ, MAP_SHARED | MAP_NORESERVE, m_fd, 0 );
+    vtyHandleAttr attrFile;
+    int iResult = GetHandleAttrs( m_hFile, attrFile );
+    if (-1 == iResult)
+      THROWNAMEDEXCEPTIONERRNO(GetLastErrNo(), "GetHandleAttrs() failed for m_hFile[0x%lx].", (uint64_t)m_hFile);
+    size_t stSize = GetSize_HandleAttr( attrFile );
+    if (0 == stSize )
+      THROWNAMEDEXCEPTION("Can't map an empty m_hFile[0x%lx].", (uint64_t)m_hFile);
     __THROWPT( e_ttFileInput | e_ttFatal );
-    if ( m_pbyMappedBegin == (uint8_t*)vkpvNullMapping )
-        THROWNAMEDEXCEPTIONERRNO( GetLastErrNo(), "mmap() failed for m_fd[%d] st_size[%ld].", m_fd, statBuf.st_size );
-    m_pbyMappedCur = m_pbyMappedBegin;
-    m_pbyMappedEnd = m_pbyMappedCur + offEnd;
+    if ( !FIsRegularFile_HandleAttr( attrFile ) )
+      THROWNAMEDEXCEPTION("m_hFile[0x%lx] is not a regular file.", (uint64_t)m_hFile);
+    m_fmoFile.SetHMMFile( MapReadOnlyHandle( m_hFile, nullptr ) );
+    __THROWPT( e_ttFileInput | e_ttFatal );
+    if ( !m_fmoFile.FIsOpen() )
+      THROWNAMEDEXCEPTIONERRNO(GetLastErrNo(), "MapReadOnlyHandle() failed to map  m_hFile[0x%lx], size [%ld].", (uint64_t)m_hFile, stSize);
+    m_pbyMappedCur = (const uint8_t*)m_fmoFile.Pv();
+    m_pbyMappedEnd = m_pbyMappedCur + stSize;
   }
 };
 
 __DGRAPH_END_NAMESPACE
 
-#endif //__GR_MMIO_H
