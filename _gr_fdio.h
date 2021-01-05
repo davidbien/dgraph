@@ -67,7 +67,7 @@ template <  class t_TyOutputNodeEl,
 struct _file_out_object
 {
   typedef vtyFileHandle _TyInitArg;
-  typedef off_t _TyStreamPos;
+  typedef vtySeekOffset _TyStreamPos;
   typedef t_TyOutputNodeEl _TyIONodeEl;
   typedef t_TyOutputLinkEl _TyIOLinkEl;
 
@@ -135,7 +135,7 @@ template <  class t_TyInputNodeEl,
 struct _file_in_object
 {
 	typedef vtyFileHandle _TyInitArg;
-	typedef off_t _TyStreamPos;
+	typedef vtySeekOffset _TyStreamPos;
 	typedef t_TyInputNodeEl _TyIONodeEl;
 	typedef t_TyInputLinkEl _TyIOLinkEl;
 

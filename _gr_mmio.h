@@ -68,7 +68,7 @@ template <  class t_TyOutputNodeEl,
 struct _mmout_object
 {
   typedef int _TyInitArg;
-  typedef off_t _TyStreamPos;
+  typedef vtySeekOffset _TyStreamPos;
   typedef t_TyOutputNodeEl _TyIONodeEl;
   typedef t_TyOutputLinkEl _TyIOLinkEl;
   static const size_t s_knGrowFileByBytes = t_knGrowFileByBytes;
@@ -224,7 +224,7 @@ template <  class t_TyInputNodeEl,
 struct _mmin_object
 {
 	typedef int _TyInitArg;
-	typedef off_t _TyStreamPos;
+	typedef vtySeekOffset _TyStreamPos;
 	typedef t_TyInputNodeEl _TyIONodeEl;
 	typedef t_TyInputLinkEl _TyIOLinkEl;
 
