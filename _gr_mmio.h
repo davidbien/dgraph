@@ -117,7 +117,7 @@ struct _mmout_object
       // We need to truncate the file to m_cpxMappedCur - m_pvMapped bytes.
       size_t stSizeTruncate = m_pbyMappedCur - (uint8_t*)pvMappedSave;
       int iTruncate = FileSetSize(m_hFile, stSizeTruncate);
-      vtyErrNo errTruncate = !iTruncate ? vkerrNullErrNo : GetLastErrNo();
+      errTruncate = !iTruncate ? vkerrNullErrNo : GetLastErrNo();
     }
     vtyErrNo errFirst;
     unsigned nError;
