@@ -60,7 +60,7 @@ public:
   _TyMapToIds       m_mapNodeIds;
   _TyMapToIds       m_mapLinkIds;
 
-  __DEBUG_STMT( bool m_fSetDirection )
+  AssertStatement( bool m_fSetDirection )
 
   _dump_object_base(  _TyInitArg _ros, bool _fDirectionDown, 
                       _TyIONodeEl const & _rione, 
@@ -76,9 +76,9 @@ public:
       m_idLinkCur( 0 ),
       m_mapNodeIds( typename _TyMapToIds::key_compare(), _rA ),
       m_mapLinkIds( typename _TyMapToIds::key_compare(), _rA )
-#ifndef NDEBUG
+#if ASSERTSENABLED
       ,m_fSetDirection( 0 )
-#endif //!NDEBUG
+#endif //ASSERTSENABLED
   {
   }
 
@@ -90,7 +90,7 @@ public:
 
   void _SetDirection( bool _fDirectionDown )
   {
-    __DEBUG_STMT( m_fSetDirection = 0 )
+    AssertStatement( m_fSetDirection = 0 )
     m_fDirectionDown = _fDirectionDown;
   }
 
@@ -139,7 +139,7 @@ public:
       m_ros << "<Change direction to " << 
         ( _fDirectionDown ? "down>\n" : "up>\n" );
     }
-    __DEBUG_STMT( m_fSetDirection  = 1 )
+    AssertStatement( m_fSetDirection  = 1 )
     m_fDirectionDown = _fDirectionDown;
   }
 

@@ -142,7 +142,7 @@ public:
   bool              m_fOutputOn;      // Allow caller to turn off output 
                                       //  ( dangerous - if you want to read it in again ).
 
-  __DEBUG_STMT( bool m_fSetDirection )
+  AssertStatement( bool m_fSetDirection )
 
   _binary_output_base(  _TyInitArg _ria, bool _fDirectionDown,
                         _TyIONodeEl const & _rione,
@@ -150,15 +150,15 @@ public:
     : m_ros( _ria, _rione, _riole ),
       m_fDirectionDown( _fDirectionDown ),
       m_fOutputOn( true )
-#ifndef NDEBUG
+#if ASSERTSENABLED
       ,m_fSetDirection( 0 )
-#endif //!NDEBUG
+#endif //ASSERTSENABLED
   {
   }
 
   void _SetDirection( bool _fDirectionDown )
   {
-    __DEBUG_STMT( m_fSetDirection = 0 )
+    AssertStatement( m_fSetDirection = 0 )
     m_fDirectionDown = _fDirectionDown;
   }
 
