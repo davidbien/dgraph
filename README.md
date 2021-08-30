@@ -48,21 +48,21 @@ Some properties:
    Saving/loading a graph that is a tree is O(N+L).
 - support for human readable dump ( depth first order ).
 - support for many types of iterators:
-  = graph iterator - iterates the entire graph in depth first order -
+  - graph iterator - iterates the entire graph in depth first order -
      either forward/backward and also supports "closed directed"
      iteration - to iterate a closed region of the graph.
-  = selection iterator - iterates a the graph according to a selection
+  - selection iterator - iterates a the graph according to a selection
      function object ( templatized by ). Currently only selective link
      iteration is supported(it is all i needed to do some other work).
-  = node iterator - maintains identity of a single node, allows
+  - node iterator - maintains identity of a single node, allows
      movement from that node. ( safe version supported )
-  = link position iterator - maintains a position in a parent/child
+  - link position iterator - maintains a position in a parent/child
      adjacency list. ( safe version supported )
-  = link identity iterator - maintains the identity of a link(safe sp)
-  = graph path iterator - maintains a path in a graph. I have a safe
+  - link identity iterator - maintains the identity of a link(safe sp)
+  - graph path iterator - maintains a path in a graph. I have a safe
      version for this as well, but it is incomplete - to be done -
      it is a bit tougher than the others :-).
-  = I/O iterators - I/O is performed using throw-state-safe iterators.
+  - I/O iterators - I/O is performed using throw-state-safe iterators.
      This allows I/O to proceed correctly, regardless of low-memory
      situations, etc. The exception can be handled i.e. allow the
      user to free disk space or close applications, and the I/O
