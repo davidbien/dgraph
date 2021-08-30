@@ -5,9 +5,11 @@ I imagine they are accurate since I was immersed in the implementation at the ti
 At this time I am less familiar with the implementation since I haven't work on it since then, except to port it to the latest C++ and platforms, etc.  
 
 Over the past year or so I have written a directed graph template.  
+
 template < class t_TyNodeEl, class t_TyLinkEl, class t_TyAllocator,  
            class t_TyGraphTraits = _graph_traits_map< ... > >  
 class _graph;  
+
 If anyone is interested in this, please reply. It would take a
 reasonable ( but not unreasonable ) amount of work to publish this
 library with documentation, etc., but I wouldn't mind too much.  
