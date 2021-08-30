@@ -1,8 +1,8 @@
 # Directed Graph Template Library
 
-These are the notes I sent to the boost mailing list in 19APR2000.  
+These are the notes I sent to the boost mailing list on 19APR2000.  
 I imagine they are accurate since I was immersed in the implementation at the time.  
-At this time I am less familiar with the implementation since I haven't work on it since then, except to port it to the latest C++ and platforms, etc.  
+At this time I am less familiar with the implementation since I haven't worked on it since then, except to port it to the latest C++ and platforms, etc.  
 
 Over the past year or so I have written a directed graph template.  
 
