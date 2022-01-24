@@ -25,11 +25,11 @@ _RawWriteGraphEl( vtyFileHandle _hFile, t_TyWrite const & _rEl )
 {	
 	if ( sizeof( _rEl ) )
 	{
-    size_t stWritten;
-    int iWriteResult = FileWrite(_hFile, &_rEl, sizeof( _rEl ), &stWritten );
+    uint64_t u64Written;
+    int iWriteResult = FileWrite(_hFile, &_rEl, sizeof( _rEl ), &u64Written );
     __THROWPT( e_ttFileOutput );
-    if ( !!iWriteResult || ( stWritten != sizeof( _rEl ) ) )
-      THROWNAMEDEXCEPTIONERRNO( GetLastErrNo(), ( stWritten != sizeof( _rEl ) ) ? "Didn't write all the data? WTF?" : "FileWrite() failed." );
+    if ( !!iWriteResult || ( u64Written != sizeof( _rEl ) ) )
+      THROWNAMEDEXCEPTIONERRNO( GetLastErrNo(), ( u64Written != sizeof( _rEl ) ) ? "Didn't write all the data? WTF?" : "FileWrite() failed." );
 	}
 }
 
@@ -40,11 +40,11 @@ _RawReadGraphEl( vtyFileHandle _hFile, t_TyRead & _rEl )
 {	
 	if ( sizeof( _rEl ) )
 	{
-    size_t stRead;
-    int iReadResult = FileRead(_hFile, &_rEl, sizeof( _rEl ), &stRead );
+    uint64_t u64Read;
+    int iReadResult = FileRead(_hFile, &_rEl, sizeof( _rEl ), &u64Read );
     __THROWPT( e_ttFileInput );
-    if ( !!iReadResult || ( stRead != sizeof( _rEl ) ) )
-      THROWNAMEDEXCEPTIONERRNO( GetLastErrNo(), ( stRead != sizeof( _rEl ) ) ? "EOF before end of value." : "FileRead() failed." );
+    if ( !!iReadResult || ( u64Read != sizeof( _rEl ) ) )
+      THROWNAMEDEXCEPTIONERRNO( GetLastErrNo(), ( u64Read != sizeof( _rEl ) ) ? "EOF before end of value." : "FileRead() failed." );
 	}
 }
 
@@ -110,11 +110,11 @@ struct _file_out_object
 	{
     if ( _st )
     {
-      size_t stWritten;
-      int iWrite = FileWrite( m_hFile, _pv, _st, &stWritten );
+      uint64_t u64Written;
+      int iWrite = FileWrite( m_hFile, _pv, _st, &u64Written );
       __THROWPT( e_ttFileOutput );
-      if ( !!iWrite || ( stWritten != _st ) )
-        THROWNAMEDEXCEPTIONERRNO( GetLastErrNo(), ( stWritten != _st ) ? "Didn't write all the data? WTF?" : "FileWrite() failed." );
+      if ( !!iWrite || ( u64Written != _st ) )
+        THROWNAMEDEXCEPTIONERRNO( GetLastErrNo(), ( u64Written != _st ) ? "Didn't write all the data? WTF?" : "FileWrite() failed." );
     }
 	}
 
@@ -150,7 +150,7 @@ struct _file_in_object
       m_ine( _rine ),
       m_ile( _rile )
 	{
-      __THROWPT( e_ttMemory ); // in the cases where where are dynamic members within m_ine or m_ile.
+    __THROWPT( e_ttMemory ); // in the cases where where are dynamic members within m_ine or m_ile.
 	}
 	_file_in_object(  vtyFileHandle _hFile,
                 t_TyInputNodeEl && _rrine,
@@ -174,11 +174,11 @@ struct _file_in_object
 	}
 	void Read( void * _pv, size_t _st )
 	{
-    size_t stRead;
-    int iRead = FileRead(m_hFile, _pv, _st, &stRead);
+    uint64_t u64Read;
+    int iRead = FileRead(m_hFile, _pv, _st, &u64Read);
     __THROWPT( e_ttFileInput );
-    if ( !!iRead || (stRead != _st ) )
-      THROWNAMEDEXCEPTIONERRNO( GetLastErrNo(), ( stRead != _st ) ? "EOF before all data read." : "FileRead() failed.");
+    if ( !!iRead || (u64Read != _st ) )
+      THROWNAMEDEXCEPTIONERRNO( GetLastErrNo(), ( u64Read != _st ) ? "EOF before all data read." : "FileRead() failed.");
 	}
 	template < class t_TyEl >
 	void ReadNodeEl( t_TyEl & _rel )

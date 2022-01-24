@@ -848,7 +848,7 @@ protected:
   _ProcessUnfinishedNodes()
   {
     Assert( !m_punStart );
-    Assert( m_nodesUnfinished.size() > ( m_fNodeToBeRemoved ? 1 : 0 ) );
+    Assert( m_nodesUnfinished.size() > ( m_fNodeToBeRemoved ? 1u : 0u ) );
 
     // We have nodes in the opposite direction to process - they are in {m_nodesUnfinished}.
     // Allocate an array of _TyUnfinishedNodeArrayEl objects and fill with the hash - then

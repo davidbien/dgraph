@@ -131,11 +131,11 @@ struct _mmout_object
         const char * pcThrow;
         switch( nError )
         {
-          case 1: pcThrow = "Error encountered truncating m_hFile[0x%lx]"; break;
-          case 2: pcThrow = "Error encountered closing file mapping m_hFile[0x%lx]"; break;
-          default: pcThrow = "Wh-what?! m_hFile[0x%lx]"; break;
+          case 1: pcThrow = "Error encountered truncating m_hFile[0x%zx]"; break;
+          case 2: pcThrow = "Error encountered closing file mapping m_hFile[0x%zx]"; break;
+          default: pcThrow = "Wh-what?! m_hFile[0x%zx]"; break;
         }
-        THROWNAMEDEXCEPTIONERRNO( errFirst, pcThrow, (uint64_t)m_hFile );
+        THROWNAMEDEXCEPTIONERRNO( errFirst, pcThrow, (size_t)m_hFile );
       }
     }
     if ( !fInUnwinding )
@@ -189,11 +189,11 @@ protected:
     int iResult = FileSetSize( m_hFile, s_knGrowFileByBytes ); // Set initial size.
     __THROWPT( e_ttFileOutput | e_ttFatal );
     if ( !!iResult )
-      THROWNAMEDEXCEPTIONERRNO(GetLastErrNo(), "FileSetSize() m_hFile[0x%lx]", (uint64_t)m_hFile);
+      THROWNAMEDEXCEPTIONERRNO(GetLastErrNo(), "FileSetSize() m_hFile[0x%zx]", (size_t)m_hFile);
     m_fmoFile.SetHMMFile( MapReadWriteHandle( m_hFile ) );
     __THROWPT( e_ttFileOutput | e_ttFatal );
     if ( !m_fmoFile.FIsOpen() )
-      THROWNAMEDEXCEPTIONERRNO(GetLastErrNo(), "Mapping failed m_hFile[0x%lx]", (uint64_t)m_hFile);
+      THROWNAMEDEXCEPTIONERRNO(GetLastErrNo(), "Mapping failed m_hFile[0x%zx]", (size_t)m_hFile);
     m_pbyMappedCur = (uint8_t*)m_fmoFile.Pv();
     m_pbyMappedEnd = m_pbyMappedCur + s_knGrowFileByBytes;
   }
@@ -209,11 +209,11 @@ protected:
     int iFileSetSize = FileSetSize(m_hFile, stMapped + stGrowBy);
     __THROWPT( e_ttFileOutput | e_ttFatal );
     if (-1 == iFileSetSize)
-      THROWNAMEDEXCEPTIONERRNO( GetLastErrNo(), "FileSetSize() failed for m_hFile[0x%lx].", (uint64_t)m_hFile );
+      THROWNAMEDEXCEPTIONERRNO( GetLastErrNo(), "FileSetSize() failed for m_hFile[0x%zx].", (size_t)m_hFile );
     m_fmoFile.SetHMMFile( MapReadWriteHandle( m_hFile ) );
     __THROWPT( e_ttFileOutput | e_ttFatal );
     if ( !m_fmoFile.FIsOpen() )
-      THROWNAMEDEXCEPTIONERRNO(GetLastErrNo(), "Remapping the failed for m_hFile[0x%lx].", (uint64_t)m_hFile );
+      THROWNAMEDEXCEPTIONERRNO(GetLastErrNo(), "Remapping the failed for m_hFile[0x%zx].", (size_t)m_hFile );
     m_pbyMappedEnd = (uint8_t*)m_fmoFile.Pv() + stMapped;
     m_pbyMappedCur = (uint8_t*)m_fmoFile.Pv() + stCurOffset;
   }
@@ -295,19 +295,19 @@ protected:
     vtyHandleAttr attrFile;
     int iResult = GetHandleAttrs( m_hFile, attrFile );
     if (-1 == iResult)
-      THROWNAMEDEXCEPTIONERRNO(GetLastErrNo(), "GetHandleAttrs() failed for m_hFile[0x%lx].", (uint64_t)m_hFile);
-    size_t stSize = GetSize_HandleAttr( attrFile );
-    if (0 == stSize )
-      THROWNAMEDEXCEPTION("Can't map an empty m_hFile[0x%lx].", (uint64_t)m_hFile);
+      THROWNAMEDEXCEPTIONERRNO(GetLastErrNo(), "GetHandleAttrs() failed for m_hFile[0x%zx].", (size_t)m_hFile);
+    uint64_t u64Size = GetSize_HandleAttr( attrFile );
+    if (0 == u64Size )
+      THROWNAMEDEXCEPTION("Can't map an empty m_hFile[0x%zx].", (size_t)m_hFile);
     __THROWPT( e_ttFileInput | e_ttFatal );
     if ( !FIsRegularFile_HandleAttr( attrFile ) )
-      THROWNAMEDEXCEPTION("m_hFile[0x%lx] is not a regular file.", (uint64_t)m_hFile);
+      THROWNAMEDEXCEPTION("m_hFile[0x%zx] is not a regular file.", (size_t)m_hFile);
     m_fmoFile.SetHMMFile( MapReadOnlyHandle( m_hFile, nullptr ) );
     __THROWPT( e_ttFileInput | e_ttFatal );
     if ( !m_fmoFile.FIsOpen() )
-      THROWNAMEDEXCEPTIONERRNO(GetLastErrNo(), "MapReadOnlyHandle() failed to map  m_hFile[0x%lx], size [%ld].", (uint64_t)m_hFile, stSize);
+      THROWNAMEDEXCEPTIONERRNO(GetLastErrNo(), "MapReadOnlyHandle() failed to map  m_hFile[0x%zx], size [%llu].", (size_t)m_hFile, u64Size);
     m_pbyMappedCur = (const uint8_t*)m_fmoFile.Pv();
-    m_pbyMappedEnd = m_pbyMappedCur + stSize;
+    m_pbyMappedEnd = m_pbyMappedCur + u64Size;
   }
 };
 
