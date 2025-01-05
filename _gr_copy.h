@@ -918,7 +918,7 @@ do_copy_up()
 
               // The link has been initialized but not constructed:
               m_rDst.template _construct_link_el1
-                < const typename t_TyGraphDst::_TyGraphLink::_TyLinkEl & >
+                < const typename t_TyGraphSrc::_TyGraphLink::_TyLinkEl & >
                 (  static_cast< _TyGraphLinkDst * >( pglbFoundDst ), 
                    *lpiSrcParent );
 

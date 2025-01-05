@@ -211,7 +211,7 @@ protected:
       default:
       {
         char  cpError[256];
-        sprintf( cpError, "_FReadOne(): Encountered bogus token [%d] at top level.", uc );
+        snprintf( cpError, sizeof(cpError), "_FReadOne(): Encountered bogus token [%d] at top level.", uc );
       }
       break;
     }
