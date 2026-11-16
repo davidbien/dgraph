@@ -12,7 +12,7 @@
 
 #define __GR_THROWGRAPHNAVERRORS
 
-#include <_assert.h>
+#include <bien_assert.h>
 
 #ifdef __GR_THROWGRAPHNAVERRORS
 // We use the SGI exception stuff:
