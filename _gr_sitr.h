@@ -167,7 +167,7 @@ public:
     SetPGNBCur_Populated( _r.PGNBCur() );
   }
 
-  void          GoParent( _TyGNIndex _u ) _BIEN_NOTHROW
+  void          GoParent( _TyGNIndex _u )
   {
     Assert( _TyIterBase::m_pgnbCur );
     // Remove the reference to the current node and re-use it to reference the
@@ -176,7 +176,7 @@ public:
     _TyIterBase::GoParent( _u );
     PGNSCur()->PushConnection( &m_gclNode );
   }
-  void          GoChild( _TyGNIndex _u ) _BIEN_NOTHROW
+  void          GoChild( _TyGNIndex _u )
   {
     Assert( _TyIterBase::m_pgnbCur );
     // Remove the reference to the current node and re-use it to reference the
@@ -188,7 +188,7 @@ public:
 
   // relation operators:
   // Re-declare so that gets overridden methods:
-  void          GoRelation( bool _fChild, _TyGNIndex _u ) _BIEN_NOTHROW
+  void          GoRelation( bool _fChild, _TyGNIndex _u )
   {
     if ( _fChild )  
       GoChild( _u );
@@ -520,7 +520,7 @@ public:
 
   // Operations between link iterators:
   template < class t_TyLinkIterator >
-  void  ExchangeSiblingParents( t_TyLinkIterator const & _rSiblingParent ) const _BIEN_NOTHROW
+  void  ExchangeSiblingParents( t_TyLinkIterator const & _rSiblingParent ) const
   {
     Assert( _TyIterBase::PGLBCur() != _rSiblingParent._TyIterBase::PGLBCur() );
     Assert( _TyIterBase::PGLBCur()->m_pgnbNodeChild == _rSiblingParent._TyIterBase::PGLBCur()->m_pgnbNodeChild );
@@ -530,7 +530,7 @@ public:
   void  ExchangeSiblingChildren( t_TyLinkIterator const & _rSiblingChild ) const _BIEN_NOTHROW
   {
     Assert( _rSiblingChild._TyIterBase::PGLBCur() != _TyIterBase::PGLBCur() );
-    Assert( _TyIterBase::PGLBCur()->m_pgnbNodeChild == _rSiblingChild._TyIterBase::PGLBCur()->m_pgnbNodeChild );
+    Assert( _TyIterBase::PGLBCur()->m_pgnbNodeParent == _rSiblingChild._TyIterBase::PGLBCur()->m_pgnbNodeParent ); // Siblings in a child list share the parent.
     _TyGraphLinkBase::ExchangeChildren( _TyIterBase::PGLBCur(), _rSiblingChild._TyIterBase::PGLBCur() );
   }
 
@@ -1306,7 +1306,7 @@ public:
     return 0;
   }
 
-  _TyGraphNodeSafe * FirstRelation( bool _fChild ) _BIEN_NOTHROW
+  _TyGraphNodeSafe * FirstRelation( bool _fChild )
   {
     if ( _fChild )  
       return FirstChild();
@@ -1381,7 +1381,7 @@ public:
 
   // Operations between link iterators:
 
-  _TyThis & operator = ( _TyThis const & _r ) _BIEN_NOTHROW
+  _TyThis & operator = ( _TyThis const & _r )
   {
     // Overwrite the current path with that passed:
     _OverwritePath( _r );
@@ -1389,7 +1389,7 @@ public:
   }
 
   template < class _TyIter >
-  _TyThis & operator = ( _TyIter const & _r ) _BIEN_NOTHROW
+  _TyThis & operator = ( _TyIter const & _r )
   {
     // Overwrite the current path with that passed:
     _OverwritePath( _r );

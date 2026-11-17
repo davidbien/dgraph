@@ -146,7 +146,7 @@ public:
                       bool _fCopyDirectionDown,
                       t_TyAllocator const & _rAlloc = t_TyAllocator(),
                       t_TyNodeCopyObject const & _rnco = t_TyNodeCopyObject(),
-                      t_TyLinkCopyObject const & _rlco = t_TyLinkCopyObject() ) _BIEN_NOTHROW
+                      t_TyLinkCopyObject const & _rlco = t_TyLinkCopyObject() )
   : m_rSrc( _rSrc ),
     m_rDst( _rDst ),
     m_fClosedDirectedCopy( _fClosedDirectedCopy ),
@@ -643,10 +643,7 @@ do_copy_down( )
                 }
 
               // The link has been initialized but not constructed:
-              m_rDst.template _construct_link_el1
-                < const typename t_TyGraphSrc::_TyGraphLink::_TyLinkEl & >
-                (  static_cast< _TyGraphLinkDst * >( pglbFoundDst ), 
-                   *lpiSrcChild );
+              m_lco( *static_cast< _TyGraphLinkDst * >( pglbFoundDst ), *lpiSrcChild.PGLCur() );
 
               // No throwing until graph owns this node.
 
@@ -832,9 +829,7 @@ do_copy_up()
               //    the nodes involved to be constructed.
               // b) Then link the newly created sub-graph into the current destination sub-graph.
               // c) Transfer ownership of the newly created sub-graph - now owned by current destination sub-graph.
-              m_rDst.template _construct_link_el1
-                < const typename t_TyGraphSrc::_TyGraphLink::_TyLinkEl & >
-                ( pglCurParentDst, *lpiSrcParent );
+              m_lco( *pglCurParentDst, *lpiSrcParent.PGLCur() );
 
               // no throwing statements until the destination owns the new graph ( else we leak the link element ).
 
@@ -917,10 +912,7 @@ do_copy_up()
                 }
 
               // The link has been initialized but not constructed:
-              m_rDst.template _construct_link_el1
-                < const typename t_TyGraphSrc::_TyGraphLink::_TyLinkEl & >
-                (  static_cast< _TyGraphLinkDst * >( pglbFoundDst ), 
-                   *lpiSrcParent );
+              m_lco( *static_cast< _TyGraphLinkDst * >( pglbFoundDst ), *lpiSrcParent.PGLCur() );
 
               // No throwing until graph owns this node.
 

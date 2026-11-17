@@ -65,8 +65,8 @@ GLB_UCountParents( const t_TyGraphLinkBase * _pglb ) _BIEN_NOTHROW
 
 template < class t_TyGraphLinkBase >
 _TyGNIndex
-GLB_UCountParentsBefore(  const t_TyGraphLinkBase * _pglb, 
-                          const t_TyGraphLinkBase ** _ppglbHead ) _BIEN_NOTHROW
+GLB_UCountParentsBefore(  const t_TyGraphLinkBase * _pglb,
+                          t_TyGraphLinkBase * const * _ppglbHead ) _BIEN_NOTHROW
 {
   // Walk the head to the element - this let's the end element work correctly ( _pglb == 0 ).
   _TyGNIndex u = 0;
@@ -100,14 +100,14 @@ GLB_UCountChildren( const t_TyGraphLinkBase * _pglb ) _BIEN_NOTHROW
 
 template < class t_TyGraphLinkBase >
 _TyGNIndex
-GLB_UCountChildrenBefore( const t_TyGraphLinkBase * _pglb, 
-                          const t_TyGraphLinkBase ** _ppglbHead ) _BIEN_NOTHROW
+GLB_UCountChildrenBefore( const t_TyGraphLinkBase * _pglb,
+                          t_TyGraphLinkBase * const * _ppglbHead ) _BIEN_NOTHROW
 {
   // Walk the head to the element - this let's the end element work correctly ( _pglb == 0 ).
   _TyGNIndex u = 0;
   for ( ;
         _pglb != *_ppglbHead;
-        _ppglbHead = &( *_ppglbHead->m_pglbNextChild ), ++u )
+        _ppglbHead = &( (*_ppglbHead)->m_pglbNextChild ), ++u )
     ;
   return u;
 }
@@ -238,8 +238,8 @@ public:
   // Return the previous graph link in the parent list.
   _TyThis *   PGLBGetPrevParent() const _BIEN_NOTHROW
   {
-    return reinterpret_cast< const _TyThis * >( 
-      reinterpret_cast< char* >(m_ppglbPrevNextParent) - 
+    return reinterpret_cast< _TyThis * >(
+      reinterpret_cast< char* >(m_ppglbPrevNextParent) -
         offsetof(_TyThis,m_pglbNextParent) );
   }
   // Return the pointer to the address of the previous element in the parent list.
@@ -289,49 +289,55 @@ public:
     *m_ppglbPrevNextParent = m_pglbNextParent;
   }
 
-  // Exchange the two parent links - <_ppglbParentBefore> must be before <_ppglbParentAfter>
-  //  in the parent list - this allows optimization.
-  // Actually <_ppglbParentBefore> can be after <_ppglbParentAfter> as long as <_ppglbParentBefore>
-  //  is not the tail of the list.
-  static void   ExchangeParentsOrdered( _TyThis * _pglbParentBefore, 
+  // Exchange the positions of two links in the same parent list.
+  // The links may be in either order and may be adjacent.
+  static void   ExchangeParentsOrdered( _TyThis * _pglbParentBefore,
                                         _TyThis * _pglbParentAfter )
   {
-    if ( !_pglbParentBefore || !_pglbParentAfter )
-      throw _graph_nav_except("_graph_link_base::ExchangeParentsOrdered(): bad parameters.");
-    Assert( _pglbParentBefore != _pglbParentAfter );  // not a nop.
-    _TyThis ** ppglbPrevNextAfter = _pglbParentAfter->m_ppglbPrevNextParent;
-    _pglbParentAfter->m_ppglbPrevNextParent = _pglbParentBefore->m_ppglbPrevNextParent;
-    _pglbParentBefore->m_ppglbPrevNextParent = ppglbPrevNextAfter;
-    _TyThis * pglbNextAfter = _pglbParentAfter->m_pglbNextParent;
-    if ( pglbNextAfter )
-    {
-      pglbNextAfter->m_ppglbPrevNextParent = &( _pglbParentBefore->m_pglbNextParent );
-    }
-    _pglbParentBefore->m_pglbNextParent->m_ppglbPrevNextParent = &( _pglbParentAfter->m_pglbNextParent );
-    _pglbParentAfter->m_pglbNextParent = _pglbParentBefore->m_pglbNextParent;
-    _pglbParentBefore->m_pglbNextParent = pglbNextAfter;
+    ExchangeParents( _pglbParentBefore, _pglbParentAfter );
   }
 
-  static void   ExchangeParents(  _TyThis * _pglbParentBefore, 
+  static void   ExchangeParents(  _TyThis * _pglbParentBefore,
                                   _TyThis * _pglbParentAfter )
   {
     if ( !_pglbParentBefore || !_pglbParentAfter )
-      throw _graph_nav_except("_graph_link_base::ExchangeParentsOrdered(): bad parameters.");
-    Assert( _pglbParentBefore != _pglbParentAfter );  // not a nop.
-    _TyThis ** ppglbPrevNextAfter = _pglbParentAfter->m_ppglbPrevNextParent;
-    _pglbParentAfter->m_ppglbPrevNextParent = _pglbParentBefore->m_ppglbPrevNextParent;
-    _pglbParentBefore->m_ppglbPrevNextParent = ppglbPrevNextAfter;
-    _TyThis * pglbNextAfter = _pglbParentAfter->m_pglbNextParent;
+      throw _graph_nav_except("_graph_link_base::ExchangeParents(): bad parameters.");
+    if ( _pglbParentBefore == _pglbParentAfter )
+      return; // nop.
+    // If adjacent then arrange that <_pglbParentBefore> immediately precedes <_pglbParentAfter>.
+    if ( _pglbParentAfter->m_pglbNextParent == _pglbParentBefore )
+      std::swap( _pglbParentBefore, _pglbParentAfter );
+    _TyThis ** const ppglbPrevNextBefore = _pglbParentBefore->m_ppglbPrevNextParent;
+    _TyThis * const pglbNextAfter = _pglbParentAfter->m_pglbNextParent;
+    if ( _pglbParentBefore->m_pglbNextParent == _pglbParentAfter )
+    {
+      // Adjacent: prev -> Before -> After -> next becomes prev -> After -> Before -> next.
+      *ppglbPrevNextBefore = _pglbParentAfter;
+      _pglbParentAfter->m_ppglbPrevNextParent = ppglbPrevNextBefore;
+      _pglbParentAfter->m_pglbNextParent = _pglbParentBefore;
+      _pglbParentBefore->m_ppglbPrevNextParent = &( _pglbParentAfter->m_pglbNextParent );
+    }
+    else
+    {
+      _TyThis ** const ppglbPrevNextAfter = _pglbParentAfter->m_ppglbPrevNextParent;
+      _TyThis * const pglbNextBefore = _pglbParentBefore->m_pglbNextParent;
+      // Put After where Before was:
+      *ppglbPrevNextBefore = _pglbParentAfter;
+      _pglbParentAfter->m_ppglbPrevNextParent = ppglbPrevNextBefore;
+      _pglbParentAfter->m_pglbNextParent = pglbNextBefore;
+      if ( pglbNextBefore )
+      {
+        pglbNextBefore->m_ppglbPrevNextParent = &( _pglbParentAfter->m_pglbNextParent );
+      }
+      // Put Before where After was:
+      *ppglbPrevNextAfter = _pglbParentBefore;
+      _pglbParentBefore->m_ppglbPrevNextParent = ppglbPrevNextAfter;
+    }
+    _pglbParentBefore->m_pglbNextParent = pglbNextAfter;
     if ( pglbNextAfter )
     {
       pglbNextAfter->m_ppglbPrevNextParent = &( _pglbParentBefore->m_pglbNextParent );
     }
-    if ( _pglbParentBefore->m_pglbNextParent )
-    {
-      _pglbParentBefore->m_pglbNextParent->m_ppglbPrevNextParent = &( _pglbParentAfter->m_pglbNextParent );
-    }
-    _pglbParentAfter->m_pglbNextParent = _pglbParentBefore->m_pglbNextParent;
-    _pglbParentBefore->m_pglbNextParent = pglbNextAfter;
   }
 
   _TyGNIndex  UCountChildren() const _BIEN_NOTHROW
@@ -468,45 +474,53 @@ public:
     _fChild ? RemoveChild() : RemoveParent();
   }
 
-  // Exchange the two child links - <_ppglbChildBefore> must be before <_ppglbChildAfter>
-  //  in the child list - this allows optimization.
-  // Actually <_ppglbChildBefore> can be after <_ppglbChildAfter> as long as <_ppglbChildBefore>
-  //  is not the tail of the list.
-  static void   ExchangeChildrenOrdered(  _TyThis * _pglbChildBefore, 
-                                          _TyThis * _pglbChildAfter ) _BIEN_NOTHROW
+  // Exchange the positions of two links in the same child list.
+  // The links may be in either order and may be adjacent.
+  static void   ExchangeChildrenOrdered( _TyThis * _pglbChildBefore,
+                                        _TyThis * _pglbChildAfter ) _BIEN_NOTHROW
   {
-    Assert( _pglbChildBefore != _pglbChildAfter );  // not a nop.
-    _TyThis ** ppglbPrevNextAfter = _pglbChildAfter->m_ppglbPrevNextChild;
-    _pglbChildAfter->m_ppglbPrevNextChild = _pglbChildBefore->m_ppglbPrevNextChild;
-    _pglbChildBefore->m_ppglbPrevNextChild = ppglbPrevNextAfter;
-    _TyThis * pglbNextAfter = _pglbChildAfter->m_pglbNextChild;
-    if ( pglbNextAfter )
-    {
-      pglbNextAfter->m_ppglbPrevNextChild = &( _pglbChildBefore->m_pglbNextChild );
-    }
-    _pglbChildBefore->m_pglbNextChild->m_ppglbPrevNextChild = &( _pglbChildAfter->m_pglbNextChild );
-    _pglbChildAfter->m_pglbNextChild = _pglbChildBefore->m_pglbNextChild;
-    _pglbChildBefore->m_pglbNextChild = pglbNextAfter;
+    ExchangeChildren( _pglbChildBefore, _pglbChildAfter );
   }
 
-  static void   ExchangeChildren( _TyThis * _pglbChildBefore, 
+  static void   ExchangeChildren(  _TyThis * _pglbChildBefore,
                                   _TyThis * _pglbChildAfter ) _BIEN_NOTHROW
   {
-    Assert( _pglbChildBefore != _pglbChildAfter );  // not a nop.
-    _TyThis ** ppglbPrevNextAfter = _pglbChildAfter->m_ppglbPrevNextChild;
-    _pglbChildAfter->m_ppglbPrevNextChild = _pglbChildBefore->m_ppglbPrevNextChild;
-    _pglbChildBefore->m_ppglbPrevNextChild = ppglbPrevNextAfter;
-    _TyThis * pglbNextAfter = _pglbChildAfter->m_pglbNextChild;
+    if ( _pglbChildBefore == _pglbChildAfter )
+      return; // nop.
+    // If adjacent then arrange that <_pglbChildBefore> immediately precedes <_pglbChildAfter>.
+    if ( _pglbChildAfter->m_pglbNextChild == _pglbChildBefore )
+      std::swap( _pglbChildBefore, _pglbChildAfter );
+    _TyThis ** const ppglbPrevNextBefore = _pglbChildBefore->m_ppglbPrevNextChild;
+    _TyThis * const pglbNextAfter = _pglbChildAfter->m_pglbNextChild;
+    if ( _pglbChildBefore->m_pglbNextChild == _pglbChildAfter )
+    {
+      // Adjacent: prev -> Before -> After -> next becomes prev -> After -> Before -> next.
+      *ppglbPrevNextBefore = _pglbChildAfter;
+      _pglbChildAfter->m_ppglbPrevNextChild = ppglbPrevNextBefore;
+      _pglbChildAfter->m_pglbNextChild = _pglbChildBefore;
+      _pglbChildBefore->m_ppglbPrevNextChild = &( _pglbChildAfter->m_pglbNextChild );
+    }
+    else
+    {
+      _TyThis ** const ppglbPrevNextAfter = _pglbChildAfter->m_ppglbPrevNextChild;
+      _TyThis * const pglbNextBefore = _pglbChildBefore->m_pglbNextChild;
+      // Put After where Before was:
+      *ppglbPrevNextBefore = _pglbChildAfter;
+      _pglbChildAfter->m_ppglbPrevNextChild = ppglbPrevNextBefore;
+      _pglbChildAfter->m_pglbNextChild = pglbNextBefore;
+      if ( pglbNextBefore )
+      {
+        pglbNextBefore->m_ppglbPrevNextChild = &( _pglbChildAfter->m_pglbNextChild );
+      }
+      // Put Before where After was:
+      *ppglbPrevNextAfter = _pglbChildBefore;
+      _pglbChildBefore->m_ppglbPrevNextChild = ppglbPrevNextAfter;
+    }
+    _pglbChildBefore->m_pglbNextChild = pglbNextAfter;
     if ( pglbNextAfter )
     {
       pglbNextAfter->m_ppglbPrevNextChild = &( _pglbChildBefore->m_pglbNextChild );
     }
-    if ( _pglbChildBefore->m_pglbNextChild )
-    {
-      _pglbChildBefore->m_pglbNextChild->m_ppglbPrevNextChild = &( _pglbChildAfter->m_pglbNextChild );
-    }
-    _pglbChildAfter->m_pglbNextChild = _pglbChildBefore->m_pglbNextChild;
-    _pglbChildBefore->m_pglbNextChild = pglbNextAfter;
   }
 };
 
@@ -574,7 +588,7 @@ public:
     _rgl.InsertChild( &_rpglInsertBeforeAddChild );
     _rgl.InsertParent( &_rpglInsertBeforeParent );
   }
-  void  ExchangeParentsOrdered( _TyGNIndex _uMin, _TyGNIndex _uMax ) const _BIEN_NOTHROW
+  void  ExchangeParentsOrdered( _TyGNIndex _uMin, _TyGNIndex _uMax ) const
   {
     Assert( _uMin < _uMax );
     Assert( _uMin < UParents() );
@@ -583,40 +597,43 @@ public:
     _TyGraphLinkBase * const * _ppglbMax = _TyGraphLinkBase::PPGLBGetNthParent( _ppglbMin, _uMax - _uMin );
     _TyGraphLinkBase::ExchangeParentsOrdered( *_ppglbMin, *_ppglbMax );
   }
+  // Move the Parent at <_uRemove> so that it is immediately before the Parent currently at <_uInsert>.
+  // If <_uInsert> is at or beyond the end then it is moved to the end of the list.
   void  MoveParentUp( _TyGNIndex _uRemove, _TyGNIndex _uInsert )
   {
     Assert( _uRemove < _uInsert );
-    Assert( _uRemove < UParents()-1 );  // no-op otherwise.
-    _TyGraphLinkBase ** _ppglbRemove = 
-      _TyGraphLinkBase::PPGLBGetNthParent( &m_pglbParents, _uRemove );
-    _TyGraphLinkBase ** _ppglbInsert = 
-      _TyGraphLinkBase::PPGLBGetNthParent( _ppglbRemove, _uInsert - _uRemove );
-    if ( *_ppglbRemove )
-    {
-      (*_ppglbRemove)->RemoveParentAssume();
-      (*_ppglbRemove)->InsertParent( _ppglbInsert );
-    }
-    else
+    _TyGraphLinkBase ** _ppglbRemove = _TyGraphLinkBase::PPGLBGetNthParent( &m_pglbParents, _uRemove );
+    _TyGraphLinkBase * const _pglbRemove = *_ppglbRemove; // Must save this: once removed <*_ppglbRemove> is the next link.
+    if ( !_pglbRemove )
     {
       throw _graph_nav_except("_graph_node_base::MoveParentUp(): index beyond end.");
     }
+    _TyGraphLinkBase ** _ppglbInsert =
+      _TyGraphLinkBase::PPGLBGetNthParent( _pglbRemove->PPGLBGetNextParent(), _uInsert - _uRemove - 1 );
+    if ( _ppglbInsert != _pglbRemove->PPGLBGetNextParent() ) // otherwise already in position.
+    {
+      _pglbRemove->RemoveParent();
+      _pglbRemove->InsertParent( _ppglbInsert );
+    }
   }
+  // Move the Parent at <_uRemove> so that it becomes the Parent at <_uInsert>.
   void  MoveParentDown( _TyGNIndex _uRemove, _TyGNIndex _uInsert )
   {
-    Assert( _uInsert < _uRemove );
-    _TyGraphLinkBase ** _ppglbInsert = _TyGraphLinkBase::PPGLBGetNthParent( &m_pglbParents, _uRemove );
+    Assert( _uInsert <= _uRemove );
+    _TyGraphLinkBase ** _ppglbInsert = _TyGraphLinkBase::PPGLBGetNthParent( &m_pglbParents, _uInsert );
     _TyGraphLinkBase ** _ppglbRemove = _TyGraphLinkBase::PPGLBGetNthParent( _ppglbInsert, _uRemove - _uInsert );
-    if ( *_ppglbRemove )
-    {
-      (*_ppglbRemove)->RemoveParent();
-      (*_ppglbRemove)->InsertParentAssume( _ppglbInsert );
-    }
-    else
+    _TyGraphLinkBase * const _pglbRemove = *_ppglbRemove; // Must save this: once removed <*_ppglbRemove> is the next link.
+    if ( !_pglbRemove )
     {
       throw _graph_nav_except("_graph_node_base::MoveParentDown(): index beyond end.");
     }
+    if ( _ppglbInsert != _ppglbRemove ) // otherwise already in position.
+    {
+      _pglbRemove->RemoveParent();
+      _pglbRemove->InsertParent( _ppglbInsert );
+    }
   }
-  void  MoveParent( const _TyGNIndex & _uRemove, const _TyGNIndex & _uInsert ) _BIEN_NOTHROW
+  void  MoveParent( const _TyGNIndex & _uRemove, const _TyGNIndex & _uInsert )
   {
     if ( _uRemove < _uInsert )
     {
@@ -684,47 +701,60 @@ public:
     _rgl.InsertParent( &_rpglInsertBeforeAddParent );
     _rgl.InsertChild( &_rpglInsertBeforeChild );
   }
-  void  ExchangeChildren( _TyGNIndex _uMin, _TyGNIndex _uMax ) _BIEN_NOTHROW
+  void  ExchangeChildrenOrdered( _TyGNIndex _uMin, _TyGNIndex _uMax ) const _BIEN_NOTHROW
   {
     Assert( _uMin < _uMax );
     Assert( _uMin < UChildren() );
     Assert( _uMax < UChildren() );
-    _TyGraphLinkBase ** _ppglbMin = _TyGraphLinkBase::PPGLBGetNthChild( &m_pglbChildren, _uMin );
-    _TyGraphLinkBase ** _ppglbMax = _TyGraphLinkBase::PPGLBGetNthChild( _ppglbMin, _uMax - _uMin );
+    _TyGraphLinkBase * const * _ppglbMin = _TyGraphLinkBase::PPGLBGetNthChild( &m_pglbChildren, _uMin );
+    _TyGraphLinkBase * const * _ppglbMax = _TyGraphLinkBase::PPGLBGetNthChild( _ppglbMin, _uMax - _uMin );
     _TyGraphLinkBase::ExchangeChildrenOrdered( *_ppglbMin, *_ppglbMax );
   }
+  void  ExchangeChildren( _TyGNIndex _u0, _TyGNIndex _u1 ) const _BIEN_NOTHROW
+  {
+    if ( _u0 < _u1 )
+      ExchangeChildrenOrdered( _u0, _u1 );
+    else
+    if ( _u1 < _u0 )
+      ExchangeChildrenOrdered( _u1, _u0 );
+  }
+  // Move the Child at <_uRemove> so that it is immediately before the Child currently at <_uInsert>.
+  // If <_uInsert> is at or beyond the end then it is moved to the end of the list.
   void  MoveChildUp( _TyGNIndex _uRemove, _TyGNIndex _uInsert )
   {
     Assert( _uRemove < _uInsert );
-    Assert( _uRemove < UChildren()-1 ); // no-op otherwise.
     _TyGraphLinkBase ** _ppglbRemove = _TyGraphLinkBase::PPGLBGetNthChild( &m_pglbChildren, _uRemove );
-    _TyGraphLinkBase ** _ppglbInsert = _TyGraphLinkBase::PPGLBGetNthChild( _ppglbRemove, _uInsert - _uRemove );
-    if ( *_ppglbRemove )
-    {
-      (*_ppglbRemove)->RemoveChildAssume();
-      (*_ppglbRemove)->InsertChild( _ppglbInsert );
-    }
-    else
+    _TyGraphLinkBase * const _pglbRemove = *_ppglbRemove; // Must save this: once removed <*_ppglbRemove> is the next link.
+    if ( !_pglbRemove )
     {
       throw _graph_nav_except("_graph_node_base::MoveChildUp(): index beyond end.");
     }
+    _TyGraphLinkBase ** _ppglbInsert =
+      _TyGraphLinkBase::PPGLBGetNthChild( _pglbRemove->PPGLBGetNextChild(), _uInsert - _uRemove - 1 );
+    if ( _ppglbInsert != _pglbRemove->PPGLBGetNextChild() ) // otherwise already in position.
+    {
+      _pglbRemove->RemoveChild();
+      _pglbRemove->InsertChild( _ppglbInsert );
+    }
   }
+  // Move the Child at <_uRemove> so that it becomes the Child at <_uInsert>.
   void  MoveChildDown( _TyGNIndex _uRemove, _TyGNIndex _uInsert )
   {
-    Assert( _uInsert < _uRemove );
-    _TyGraphLinkBase ** _ppglbInsert = _TyGraphLinkBase::PPGLBGetNthChild( &m_pglbChildren, _uRemove );
+    Assert( _uInsert <= _uRemove );
+    _TyGraphLinkBase ** _ppglbInsert = _TyGraphLinkBase::PPGLBGetNthChild( &m_pglbChildren, _uInsert );
     _TyGraphLinkBase ** _ppglbRemove = _TyGraphLinkBase::PPGLBGetNthChild( _ppglbInsert, _uRemove - _uInsert );
-    if ( *_ppglbRemove )
-    {
-      (*_ppglbRemove)->RemoveChild();
-      (*_ppglbRemove)->InsertChildAssume( _ppglbInsert );
-    }
-    else
+    _TyGraphLinkBase * const _pglbRemove = *_ppglbRemove; // Must save this: once removed <*_ppglbRemove> is the next link.
+    if ( !_pglbRemove )
     {
       throw _graph_nav_except("_graph_node_base::MoveChildDown(): index beyond end.");
     }
+    if ( _ppglbInsert != _ppglbRemove ) // otherwise already in position.
+    {
+      _pglbRemove->RemoveChild();
+      _pglbRemove->InsertChild( _ppglbInsert );
+    }
   }
-  void      MoveChild( const _TyGNIndex & _uRemove, const _TyGNIndex & _uInsert ) _BIEN_NOTHROW
+  void      MoveChild( const _TyGNIndex & _uRemove, const _TyGNIndex & _uInsert )
   {
     if ( _uRemove < _uInsert )
     {

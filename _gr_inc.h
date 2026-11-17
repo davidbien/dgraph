@@ -76,10 +76,11 @@ struct _gr_hash_ptr
 };
 
 #ifdef __DGRAPH_COUNT_EL_ALLOC_LIFETIME
-extern int gs_iNodesAllocated;
-extern int gs_iLinksAllocated;
-extern int gs_iNodesConstructed;
-extern int gs_iLinksConstructed;
+// Inline variables (C++17) so that no source file need define them.
+inline int gs_iNodesAllocated = 0;
+inline int gs_iLinksAllocated = 0;
+inline int gs_iNodesConstructed = 0;
+inline int gs_iLinksConstructed = 0;
 #endif //__DGRAPH_COUNT_EL_ALLOC_LIFETIME
 
 __DGRAPH_END_NAMESPACE

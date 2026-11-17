@@ -67,7 +67,7 @@ template <  class t_TyOutputNodeEl,
             size_t t_knGrowFileByBytes = 65536 >
 struct _mmout_object
 {
-  typedef int _TyInitArg;
+  typedef vtyFileHandle _TyInitArg;
   typedef vtySeekOffset _TyStreamPos;
   typedef t_TyOutputNodeEl _TyIONodeEl;
   typedef t_TyOutputLinkEl _TyIOLinkEl;
@@ -84,7 +84,7 @@ struct _mmout_object
 
   _mmout_object( _mmout_object const & ) = delete;
   _mmout_object() = delete;
-	_mmout_object(  int _hFile,
+	_mmout_object(  vtyFileHandle _hFile,
                   t_TyOutputNodeEl const & _rone,
                   t_TyOutputLinkEl const & _role )
 		: m_hFile( _hFile ),
@@ -93,7 +93,7 @@ struct _mmout_object
 	{
     _OpenMap();
 	}
-	_mmout_object(  int _hFile,
+	_mmout_object(  vtyFileHandle _hFile,
                   t_TyOutputNodeEl && _rrone,
                   t_TyOutputLinkEl && _rrole )
 		: m_hFile( _hFile ),
@@ -223,7 +223,7 @@ template <  class t_TyInputNodeEl,
             class t_TyInputLinkEl = t_TyInputNodeEl >
 struct _mmin_object
 {
-	typedef int _TyInitArg;
+	typedef vtyFileHandle _TyInitArg;
 	typedef vtySeekOffset _TyStreamPos;
 	typedef t_TyInputNodeEl _TyIONodeEl;
 	typedef t_TyInputLinkEl _TyIOLinkEl;
@@ -238,7 +238,7 @@ struct _mmin_object
 
   _mmin_object( _mmin_object const & ) = delete;
   _mmin_object() = delete;
-	_mmin_object(  int _hFile,
+	_mmin_object(  vtyFileHandle _hFile,
                 t_TyInputNodeEl const & _rine,
                 t_TyInputLinkEl const & _rile )
 		: m_hFile( _hFile ),
@@ -247,7 +247,7 @@ struct _mmin_object
 	{
     _OpenMap();
 	}
-	_mmin_object(  int _hFile,
+	_mmin_object(  vtyFileHandle _hFile,
                 t_TyInputNodeEl && _rrine,
                 t_TyInputLinkEl && _rrile )
 		: m_hFile( _hFile ),

@@ -223,19 +223,21 @@ public:
   void    _ReadNode( t_TyGraphNode * _pgn )
   {
     __THROWPT( e_ttFileInput | e_ttMemory );
+    _TyBase::m_ris.ReadNodeEl( _pgn->RElNonConst() );
+    // Count the element as constructed only once it has been read: reading may throw and then be tried again.
 #ifdef __DGRAPH_COUNT_EL_ALLOC_LIFETIME
     gs_iNodesConstructed++;
 #endif //__DGRAPH_COUNT_EL_ALLOC_LIFETIME
-    _TyBase::m_ris.ReadNodeEl( _pgn->RElNonConst() );
   }
 
   void    _ReadLink( t_TyGraphLink * _pgl )
   {
     __THROWPT( e_ttFileInput | e_ttMemory );
+    _TyBase::m_ris.ReadLinkEl( _pgl->RElNonConst() );
+    // Count the element as constructed only once it has been read: reading may throw and then be tried again.
 #ifdef __DGRAPH_COUNT_EL_ALLOC_LIFETIME
     gs_iLinksConstructed++;
 #endif //__DGRAPH_COUNT_EL_ALLOC_LIFETIME
-    _TyBase::m_ris.ReadLinkEl( _pgl->RElNonConst() );
   }
 };
 

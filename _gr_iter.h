@@ -80,15 +80,15 @@ public:
   {
     return m_pgnbCur->PPGLBParentHead();
   }
-  void          GoParent( _TyGNIndex _u ) _BIEN_NOTHROW
+  void          GoParent( _TyGNIndex _u )
   {
     m_pgnbCur = m_pgnbCur->PGNBGetNthParent( _u );
   }
-  void  ExchangeParentsOrdered( _TyGNIndex _uMin, _TyGNIndex _uMax ) const _BIEN_NOTHROW
+  void  ExchangeParentsOrdered( _TyGNIndex _uMin, _TyGNIndex _uMax ) const
   {
     m_pgnbCur->ExchangeParentsOrdered( _uMin, _uMax );
   }
-  void  ExchangeParents( _TyGNIndex _u0, _TyGNIndex _u1 ) const _BIEN_NOTHROW
+  void  ExchangeParents( _TyGNIndex _u0, _TyGNIndex _u1 ) const
   {
     if ( _u0 < _u1 )
     {
@@ -99,15 +99,15 @@ public:
       m_pgnbCur->ExchangeParentsOrdered( _u1, _u0 );
     }
   }
-  void  MoveParentUp( const _TyGNIndex & _uRemove, const _TyGNIndex & _uInsert ) const _BIEN_NOTHROW
+  void  MoveParentUp( const _TyGNIndex & _uRemove, const _TyGNIndex & _uInsert ) const
   {
     m_pgnbCur->MoveParentUp( _uRemove, _uInsert );
   }
-  void  MoveParentDown( const _TyGNIndex & _uRemove, const _TyGNIndex & _uInsert ) const _BIEN_NOTHROW
+  void  MoveParentDown( const _TyGNIndex & _uRemove, const _TyGNIndex & _uInsert ) const
   {
     m_pgnbCur->MoveParentDown( _uRemove, _uInsert );
   }
-  void  MoveParent( const _TyGNIndex & _uRemove, const _TyGNIndex & _uInsert ) const _BIEN_NOTHROW
+  void  MoveParent( const _TyGNIndex & _uRemove, const _TyGNIndex & _uInsert ) const
   {
     m_pgnbCur->MoveParent( _uRemove, _uInsert );
   }
@@ -143,7 +143,7 @@ public:
   {
     return m_pgnbCur->PPGLBChildHead();
   }
-  void          GoChild( _TyGNIndex _u ) _BIEN_NOTHROW
+  void          GoChild( _TyGNIndex _u )
   {
     m_pgnbCur = m_pgnbCur->PGNBGetNthChild( _u );
   }
@@ -162,15 +162,15 @@ public:
       m_pgnbCur->ExchangeChildrenOrdered( _u1, _u0 );
     }
   }
-  void  MoveChildUp( _TyGNIndex _uRemove, _TyGNIndex _uInsert ) const _BIEN_NOTHROW
+  void  MoveChildUp( _TyGNIndex _uRemove, _TyGNIndex _uInsert ) const
   {
     m_pgnbCur->MoveChildUp( _uRemove, _uInsert );
   }
-  void  MoveChildDown( _TyGNIndex _uRemove, _TyGNIndex _uInsert ) const _BIEN_NOTHROW
+  void  MoveChildDown( _TyGNIndex _uRemove, _TyGNIndex _uInsert ) const
   {
     m_pgnbCur->MoveChildDown( _uRemove, _uInsert );
   }
-  void  MoveChild( const _TyGNIndex & _uRemove, const _TyGNIndex & _uInsert ) const _BIEN_NOTHROW
+  void  MoveChild( const _TyGNIndex & _uRemove, const _TyGNIndex & _uInsert ) const
   {
     m_pgnbCur->MoveChild( _uRemove, _uInsert );
   }
@@ -207,7 +207,7 @@ public:
   {
     return _fChildren ? FirstChild() : FirstParent();
   }
-  void          GoRelation( bool _fChild, _TyGNIndex _u ) _BIEN_NOTHROW
+  void          GoRelation( bool _fChild, _TyGNIndex _u )
   {
     if ( _fChild )  
       GoChild( _u );
@@ -253,7 +253,7 @@ public:
   swap( t_TySwap & _r )
   {
 	  __ASSERT_SAME_TYPE( t_TySwap, _TyThis );
-		swap( m_pgnbCur, _r.m_pgnbCur );
+		std::swap( m_pgnbCur, _r.m_pgnbCur ); // An unqualified call finds this member.
   }
 };
 
@@ -390,11 +390,11 @@ public:
     // A crash indicates that likely the iterator was at the end.
     m_ppglbCur = _TyGraphLinkBase::PPGLBGetNthParent( (*m_ppglbCur)->m_pgnbNodeParent->PPGLBParentHead(), _u );
   }
-  void  ExchangeParentsOrdered( _TyGNIndex _uMin, _TyGNIndex _uMax ) const _BIEN_NOTHROW
+  void  ExchangeParentsOrdered( _TyGNIndex _uMin, _TyGNIndex _uMax ) const
   {
     (*m_ppglbCur)->m_pgnbNodeParent->ExchangeParentsOrdered( _uMin, _uMax );
   }
-  void  ExchangeParents( _TyGNIndex _u0, _TyGNIndex _u1 ) const _BIEN_NOTHROW
+  void  ExchangeParents( _TyGNIndex _u0, _TyGNIndex _u1 ) const
   {
     if ( _u0 < _u1 )
     {
@@ -405,15 +405,15 @@ public:
       (*m_ppglbCur)->m_pgnbNodeParent->ExchangeParentsOrdered( _u1, _u0 );
     }
   }
-  void  MoveParentUp( _TyGNIndex _uRemove, _TyGNIndex _uInsert ) const _BIEN_NOTHROW
+  void  MoveParentUp( _TyGNIndex _uRemove, _TyGNIndex _uInsert ) const
   {
     (*m_ppglbCur)->m_pgnbNodeParent->MoveParentUp( _uRemove, _uInsert );
   }
-  void  MoveParentDown( _TyGNIndex _uRemove, _TyGNIndex _uInsert ) const _BIEN_NOTHROW
+  void  MoveParentDown( _TyGNIndex _uRemove, _TyGNIndex _uInsert ) const
   {
     (*m_ppglbCur)->m_pgnbNodeParent->MoveParentDown( _uRemove, _uInsert );
   }
-  void  MoveParent( const _TyGNIndex & _uRemove, const _TyGNIndex & _uInsert ) const _BIEN_NOTHROW
+  void  MoveParent( const _TyGNIndex & _uRemove, const _TyGNIndex & _uInsert ) const
   {
     (*m_ppglbCur)->m_pgnbNodeParent->MoveParent( _uRemove, _uInsert );
   }
@@ -454,15 +454,15 @@ public:
       (*m_ppglbCur)->m_pgnbNodeChild->ExchangeChildrenOrdered( _u1, _u0 );
     }
   }
-  void  MoveChildUp( _TyGNIndex _uRemove, _TyGNIndex _uInsert ) const _BIEN_NOTHROW
+  void  MoveChildUp( _TyGNIndex _uRemove, _TyGNIndex _uInsert ) const
   {
     (*m_ppglbCur)->m_pgnbNodeChild->MoveChildUp( _uRemove, _uInsert );
   }
-  void  MoveChildDown( _TyGNIndex _uRemove, _TyGNIndex _uInsert ) const _BIEN_NOTHROW
+  void  MoveChildDown( _TyGNIndex _uRemove, _TyGNIndex _uInsert ) const
   {
     (*m_ppglbCur)->m_pgnbNodeChild->MoveChildDown( _uRemove, _uInsert );
   }
-  void  MoveChild( const _TyGNIndex & _uRemove, const _TyGNIndex & _uInsert ) const _BIEN_NOTHROW
+  void  MoveChild( const _TyGNIndex & _uRemove, const _TyGNIndex & _uInsert ) const
   {
     (*m_ppglbCur)->m_pgnbNodeChild->MoveChild( _uRemove, _uInsert );
   }
@@ -474,7 +474,7 @@ public:
   }
   _TyGNIndex  UParentsAfter() const _BIEN_NOTHROW
   {
-    return (*m_ppglbCur)->UParents();
+    return (*m_ppglbCur)->UCountParents();
   }
   void        NextParent() _BIEN_NOTHROW
   {
@@ -491,7 +491,7 @@ public:
   }
   _TyGNIndex  UChildrenAfter() const _BIEN_NOTHROW
   {
-    return (*m_ppglbCur)->UChildren();
+    return (*m_ppglbCur)->UCountChildren();
   }
   void        NextChild() _BIEN_NOTHROW
   {
@@ -546,7 +546,7 @@ public:
 
   // Operations between link iterators:
   template < class _TyLinkIterator >
-  void  ExchangeSiblingParents( _TyLinkIterator const & _rSiblingParent ) const _BIEN_NOTHROW
+  void  ExchangeSiblingParents( _TyLinkIterator const & _rSiblingParent ) const
   {
     Assert( PGLBCur() != _rSiblingParent.PGLBCur() );
     Assert( PGLBCur()->m_pgnbNodeChild == _rSiblingParent.PGLBCur()->m_pgnbNodeChild );
@@ -556,7 +556,7 @@ public:
   void  ExchangeSiblingChildren( _TyLinkIterator const & _rSiblingChild ) const _BIEN_NOTHROW
   {
     Assert( _rSiblingChild.PGLBCur() != PGLBCur() );
-    Assert( PGLBCur()->m_pgnbNodeChild == _rSiblingChild.PGLBCur()->m_pgnbNodeChild );
+    Assert( PGLBCur()->m_pgnbNodeParent == _rSiblingChild.PGLBCur()->m_pgnbNodeParent ); // Siblings in a child list share the parent.
     _TyGraphLinkBase::ExchangeChildren( PGLBCur(), _rSiblingChild.PGLBCur() );
   }
 
@@ -601,7 +601,7 @@ public:
   swap( t_TySwap & _r )
   {
 	__ASSERT_SAME_TYPE(  t_TySwap, _TyThis );
-	swap( m_ppglbCur, _r.m_ppglbCur );
+	std::swap( m_ppglbCur, _r.m_ppglbCur ); // An unqualified call finds this member.
   }
 };
 
@@ -693,11 +693,11 @@ public:
   {
     m_pglbCur = *_TyGraphLinkBase::PPGLBGetNthParent( m_pglbCur->m_pgnbNodeParent->PPGLBParentHead(), _u );
   }
-  void  ExchangeParentsOrdered( _TyGNIndex _uMin, _TyGNIndex _uMax ) const _BIEN_NOTHROW
+  void  ExchangeParentsOrdered( _TyGNIndex _uMin, _TyGNIndex _uMax ) const
   {
     m_pglbCur->m_pgnbNodeParent->ExchangeParentsOrdered( _uMin, _uMax );
   }
-  void  ExchangeParents( _TyGNIndex _u0, _TyGNIndex _u1 ) const _BIEN_NOTHROW
+  void  ExchangeParents( _TyGNIndex _u0, _TyGNIndex _u1 ) const
   {
     if ( _u0 < _u1 )
     {
@@ -708,15 +708,15 @@ public:
       m_pglbCur->m_pgnbNodeParent->ExchangeParentsOrdered( _u1, _u0 );
     }
   }
-  void  MoveParentUp( _TyGNIndex _uRemove, _TyGNIndex _uInsert ) const _BIEN_NOTHROW
+  void  MoveParentUp( _TyGNIndex _uRemove, _TyGNIndex _uInsert ) const
   {
     m_pglbCur->m_pgnbNodeParent->MoveParentUp( _uRemove, _uInsert );
   }
-  void  MoveParentDown( _TyGNIndex _uRemove, _TyGNIndex _uInsert ) const _BIEN_NOTHROW
+  void  MoveParentDown( _TyGNIndex _uRemove, _TyGNIndex _uInsert ) const
   {
     m_pglbCur->m_pgnbNodeParent->MoveParentDown( _uRemove, _uInsert );
   }
-  void  MoveParent( const _TyGNIndex & _uRemove, const _TyGNIndex & _uInsert ) const _BIEN_NOTHROW
+  void  MoveParent( const _TyGNIndex & _uRemove, const _TyGNIndex & _uInsert ) const
   {
     m_pglbCur->m_pgnbNodeParent->MoveParent( _uRemove, _uInsert );
   }
@@ -756,15 +756,15 @@ public:
       m_pglbCur->m_pgnbNodeChild->ExchangeChildrenOrdered( _u1, _u0 );
     }
   }
-  void  MoveChildUp( _TyGNIndex _uRemove, _TyGNIndex _uInsert ) const _BIEN_NOTHROW
+  void  MoveChildUp( _TyGNIndex _uRemove, _TyGNIndex _uInsert ) const
   {
     m_pglbCur->m_pgnbNodeChild->MoveChildUp( _uRemove, _uInsert );
   }
-  void  MoveChildDown( _TyGNIndex _uRemove, _TyGNIndex _uInsert ) const _BIEN_NOTHROW
+  void  MoveChildDown( _TyGNIndex _uRemove, _TyGNIndex _uInsert ) const
   {
     m_pglbCur->m_pgnbNodeChild->MoveChildDown( _uRemove, _uInsert );
   }
-  void  MoveChild( const _TyGNIndex & _uRemove, const _TyGNIndex & _uInsert ) const _BIEN_NOTHROW
+  void  MoveChild( const _TyGNIndex & _uRemove, const _TyGNIndex & _uInsert ) const
   {
     m_pglbCur->m_pgnbNodeChild->MoveChild( _uRemove, _uInsert );
   }
@@ -776,7 +776,7 @@ public:
   }
   _TyGNIndex  UParentsAfter() const _BIEN_NOTHROW
   {
-    return m_pglbCur->UParents();
+    return m_pglbCur->UCountParents();
   }
   void        NextParent() _BIEN_NOTHROW
   {
@@ -793,7 +793,7 @@ public:
   }
   _TyGNIndex  UChildrenAfter() const _BIEN_NOTHROW
   {
-    return m_pglbCur->UChildren();
+    return m_pglbCur->UCountChildren();
   }
   void        NextChild() _BIEN_NOTHROW
   {
@@ -844,7 +844,7 @@ public:
 
   // Operations between link iterators:
   template < class _TyLinkIterator >
-  void  ExchangeSiblingParents( _TyLinkIterator const & _rSiblingParent ) const _BIEN_NOTHROW
+  void  ExchangeSiblingParents( _TyLinkIterator const & _rSiblingParent ) const
   {
     Assert( PGLBCur() != _rSiblingParent.PGLBCur() );
     Assert( PGLBCur()->m_pgnbNodeChild == _rSiblingParent.PGLBCur()->m_pgnbNodeChild );
@@ -876,7 +876,7 @@ public:
   swap( t_TySwap & _r )
   {
   	__ASSERT_SAME_TYPE(  t_TySwap, _TyThis );
-    swap( m_pglbCur, _r.m_pglbCur );
+    std::swap( m_pglbCur, _r.m_pglbCur ); // An unqualified call finds this member.
   }
 };
 
@@ -961,11 +961,11 @@ public:
   {
     return m_ppnbHead->m_pgnbNode->FParents();
   }
-  void ExchangeParentsOrdered( _TyGNIndex _uMin, _TyGNIndex _uMax ) const _BIEN_NOTHROW
+  void ExchangeParentsOrdered( _TyGNIndex _uMin, _TyGNIndex _uMax ) const
   {
     m_ppnbHead->m_pgnbNode->ExchangeParentsOrdered( _uMin, _uMax );
   }
-  void ExchangeParents( _TyGNIndex _u0, _TyGNIndex _u1 ) const _BIEN_NOTHROW
+  void ExchangeParents( _TyGNIndex _u0, _TyGNIndex _u1 ) const
   {
     if ( _u0 < _u1 )
     {
@@ -976,15 +976,15 @@ public:
       m_ppnbHead->m_pgnbNode->ExchangeParentsOrdered( _u1, _u0 );
     }
   }
-  void MoveParentUp( _TyGNIndex _uRemove, _TyGNIndex _uInsert ) const _BIEN_NOTHROW
+  void MoveParentUp( _TyGNIndex _uRemove, _TyGNIndex _uInsert ) const
   {
     m_ppnbHead->m_pgnbNode->MoveParentUp( _uRemove, _uInsert );
   }
-  void MoveParentDown( _TyGNIndex _uRemove, _TyGNIndex _uInsert ) const _BIEN_NOTHROW
+  void MoveParentDown( _TyGNIndex _uRemove, _TyGNIndex _uInsert ) const
   {
     m_ppnbHead->m_pgnbNode->MoveParentDown( _uRemove, _uInsert );
   }
-  void MoveParent( const _TyGNIndex & _uRemove, const _TyGNIndex & _uInsert ) const _BIEN_NOTHROW
+  void MoveParent( const _TyGNIndex & _uRemove, const _TyGNIndex & _uInsert ) const
   {
     m_ppnbHead->m_pgnbNode->MoveParent( _uRemove, _uInsert );
   }
@@ -1012,15 +1012,15 @@ public:
       m_ppnbHead->m_pgnbNode->ExchangeChildrenOrdered( _u1, _u0 );
     }
   }
-  void MoveChildUp( _TyGNIndex _uRemove, _TyGNIndex _uInsert ) const _BIEN_NOTHROW
+  void MoveChildUp( _TyGNIndex _uRemove, _TyGNIndex _uInsert ) const
   {
     m_ppnbHead->m_pgnbNode->MoveChildUp( _uRemove, _uInsert );
   }
-  void MoveChildDown( _TyGNIndex _uRemove, _TyGNIndex _uInsert ) const _BIEN_NOTHROW
+  void MoveChildDown( _TyGNIndex _uRemove, _TyGNIndex _uInsert ) const
   {
     m_ppnbHead->m_pgnbNode->MoveChildDown( _uRemove, _uInsert );
   }
-  void MoveChild( const _TyGNIndex & _uRemove, const _TyGNIndex & _uInsert ) const _BIEN_NOTHROW
+  void MoveChild( const _TyGNIndex & _uRemove, const _TyGNIndex & _uInsert ) const
   {
     m_ppnbHead->m_pgnbNode->MoveChild( _uRemove, _uInsert );
   }
@@ -1032,7 +1032,7 @@ public:
   }
   _TyGNIndex UParentsAfter() const _BIEN_NOTHROW
   {
-    return m_ppnbHead->m_pglbLink->UParents();
+    return m_ppnbHead->m_pglbLink->UCountParents();
   }
   _TyGraphNodeBase * NextParent() _BIEN_NOTHROW
   {
@@ -1065,7 +1065,7 @@ public:
   }
   _TyGNIndex UChildrenAfter() const _BIEN_NOTHROW
   {
-    return m_ppnbHead->m_pglbLink->UChildren();
+    return m_ppnbHead->m_pglbLink->UCountChildren();
   }
   _TyGraphNodeBase * NextChild() _BIEN_NOTHROW
   {
@@ -1124,7 +1124,7 @@ public:
 
   // Operations between link iterators:
   template < class _TyLinkIterator >
-  void  ExchangeSiblingParents( _TyLinkIterator const & _rSiblingParent ) const _BIEN_NOTHROW
+  void  ExchangeSiblingParents( _TyLinkIterator const & _rSiblingParent ) const
   {
     Assert( PGLBCur() != _rSiblingParent.PGLBCur() );
     Assert( PGLBCur()->m_pgnbNodeChild == _rSiblingParent.PGLBCur()->m_pgnbNodeChild );
@@ -1134,7 +1134,7 @@ public:
   void  ExchangeSiblingChildren( _TyLinkIterator const & _rSiblingChild ) const _BIEN_NOTHROW
   {
     Assert( _rSiblingChild.PGLBCur() != PGLBCur() );
-    Assert( PGLBCur()->m_pgnbNodeChild == _rSiblingChild.PGLBCur()->m_pgnbNodeChild );
+    Assert( PGLBCur()->m_pgnbNodeParent == _rSiblingChild.PGLBCur()->m_pgnbNodeParent ); // Siblings in a child list share the parent.
     _TyGraphLinkBase::ExchangeChildren( PGLBCur(), _rSiblingChild.PGLBCur() );
   }
 
@@ -1147,9 +1147,10 @@ public:
   // We want derived->base conversion for this method:
   void swap( _TyThis & _r )
   {
-    swap( m_ppnbHead, _r.m_ppnbHead );
-    swap( m_pppnbTail, _r.m_pppnbTail );
-    swap( m_uCount, _r.m_uCount );
+    // An unqualified call finds this member.
+    std::swap( m_ppnbHead, _r.m_ppnbHead );
+    std::swap( m_pppnbTail, _r.m_pppnbTail );
+    std::swap( m_uCount, _r.m_uCount );
   }
   
   bool valid( bool _fCheckCount = true ) const
@@ -1584,14 +1585,14 @@ public:
     return 0;
   }
 
-  _TyGraphNodeBase * FirstRelation( bool _fChild ) _BIEN_NOTHROW
+  _TyGraphNodeBase * FirstRelation( bool _fChild )
   {
     if ( _fChild )  
       return FirstChild();
     else            
       return FirstParent();
   }
-  _TyGraphNodeBase * GoRelation( bool _fChild, _TyGNIndex _u ) _BIEN_NOTHROW
+  _TyGraphNodeBase * GoRelation( bool _fChild, _TyGNIndex _u )
   {
     if ( _fChild )  
       return GoChild( _u );

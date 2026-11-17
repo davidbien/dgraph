@@ -302,6 +302,10 @@ public:
       bool _fInit = true )
     : _TyBase( _pgnbCur, _pglbCur, _fClosedDirected, _fDirectionDown, _rAlloc, _fInit )
     , m_fInitialized( false )
+    , m_pgnbIterationRoot( 0 )
+    , m_iCurVisitOrder( 0 )
+    , m_fNodeToBeRemoved( false )
+    , m_iContexts( 0 )
     , m_nodesUnfinished( ms_stInitSizeNodes, typename _TyUnfinishedNodes::hasher(), typename _TyUnfinishedNodes::key_equal(), _rAlloc )
     , m_linksVisitedDown( ms_stInitSizeLinks, typename _TyVisitedLinks::hasher(), typename _TyVisitedLinks::key_equal(), _rAlloc )
     , m_linksVisitedUp( ms_stInitSizeLinks, typename _TyVisitedLinks::hasher(), typename _TyVisitedLinks::key_equal(), _rAlloc )
@@ -323,7 +327,9 @@ public:
     , m_fInitialized( _r.m_fInitialized )
     , // If we throw during constuction the
       // whole object goes away.
-    m_iCurVisitOrder( _r.m_iCurVisitOrder )
+    m_pgnbIterationRoot( _r.m_pgnbIterationRoot )
+    , m_iCurVisitOrder( _r.m_iCurVisitOrder )
+    , m_fNodeToBeRemoved( false ) // This is only meaningful during a call to _Next().
     , m_nodesUnfinished( _r.m_nodesUnfinished )
     , m_linksVisitedDown( _r.m_linksVisitedDown )
     , m_linksVisitedUp( _r.m_linksVisitedUp )
@@ -359,6 +365,10 @@ public:
   explicit _graph_fwd_iter_base( _TyBase const & _r, bool _fInit = true )
     : _TyBase( _r )
     , m_fInitialized( false )
+    , m_pgnbIterationRoot( 0 )
+    , m_iCurVisitOrder( 0 )
+    , m_fNodeToBeRemoved( false )
+    , m_iContexts( 0 )
     , m_nodesUnfinished( ms_stInitSizeNodes, typename _TyUnfinishedNodes::hasher(), typename _TyUnfinishedNodes::key_equal(), _r.get_allocator() )
     , m_linksVisitedDown( ms_stInitSizeLinks, typename _TyVisitedLinks::hasher(), typename _TyVisitedLinks::key_equal(), _r.get_allocator() )
     , m_linksVisitedUp( ms_stInitSizeLinks, typename _TyVisitedLinks::hasher(), typename _TyVisitedLinks::key_equal(), _r.get_allocator() )
@@ -396,7 +406,7 @@ public:
   pair< t_TyGraphLinkBase *, t_TyGraphNodeBase * > PairCurObjs() const _BIEN_NOTHROW
   {
     // Return the current object(s) to the caller:
-    return pair< t_TyGraphLinkBase *, t_TyGraphNodeBase * >( _TyBase::m_pgnbCur, _TyBase::m_pglbCur );
+    return pair< t_TyGraphLinkBase *, t_TyGraphNodeBase * >( _TyBase::m_pglbCur, _TyBase::m_pgnbCur );
   }
 
   // Two types of assignment - assignment with full blown iterator ( us ) -
@@ -405,10 +415,12 @@ public:
   {
     // we become unitialized in case we throw during copying of state:
     m_fInitialized = false;
-    ( (_TyBase)( *this ) ) = _r;
+    ( (_TyBase &)*this ) = _r; // Must cast to a reference - casting to the type assigns to a temporary.
 
     if ( _r.m_fInitialized )
     {
+      m_pgnbIterationRoot = _r.m_pgnbIterationRoot;
+      m_fNodeToBeRemoved = false; // This is only meaningful during a call to _Next().
       m_iCurVisitOrder = _r.m_iCurVisitOrder;
       m_nodesUnfinished = _r.m_nodesUnfinished;
       m_linksVisitedDown = _r.m_linksVisitedDown;
@@ -429,6 +441,7 @@ public:
         _Init();
       }
     }
+    return *this;
   }
 
   // Assignment with base class - this re-initializes this iterator:
@@ -534,6 +547,7 @@ protected:
     typename _TyUnfinishedArrayAllocator::size_type stN = _r.m_punEnd - _r.m_punStart;
     Assert( stN );
     _TyBase::allocate_n( m_punStart, stN ); // throws.
+    std::copy( _r.m_punStart, _r.m_punEnd, m_punStart ); // Must copy the contents as well.
     m_punEnd = m_punStart + stN;
     m_punCur = m_punStart + ( _r.m_punCur - _r.m_punStart );
   }
@@ -730,7 +744,9 @@ protected:
 
       // If we are doing a closed-directed iteration then we are done.
       // Otherwise check the hash for unfinished nodes:
-      if ( _TyBase::m_fClosedDirected || ( !!m_nodesUnfinished.size() == m_fNodeToBeRemoved ) )
+      // We are done if there are no unfinished nodes other than one which is about to be removed.
+      // Must compare the count: there may be several unfinished nodes of which one is to be removed.
+      if ( _TyBase::m_fClosedDirected || ( m_nodesUnfinished.size() == size_t( m_fNodeToBeRemoved ? 1 : 0 ) ) )
       {
         if ( _TyBase::m_fClosedDirected )
         {

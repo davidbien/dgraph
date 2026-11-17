@@ -352,6 +352,15 @@ public:
     return _TyTransform( _rNonConstIter );  // transformation from non-const->const is well defined.
   }
 
+  // The template below is never the copy assignment operator so we must declare this one -
+  //  otherwise the compiler generates one that shares the root node between the two graphs.
+  _TyThis &
+  operator = ( _TyThis const & _r )
+  {
+    replace_copy( _r );
+    return *this;
+  }
+
   template < class t_TyGraph >
   _TyThis &
   operator = ( t_TyGraph const & _r )
@@ -454,11 +463,13 @@ public:
   template < class t_TyGraph >
   void  replace_copy( t_TyGraph const & _r )
   {
+    if ( static_cast< const void * >( &_r ) == static_cast< const void * >( this ) )
+      return; // Copying ourselves - we would destroy the source below.
     // This destroys the current graph first - could do otherwise:
     destroy();
 
-    _graph_copy_struct< t_TyGraph, _TyThis, 
-      typename _TyBaseGraph::_TyPathNodeBaseAllocatorAsPassed > 
+    _graph_copy_struct< t_TyGraph, _TyThis,
+      typename _TyBaseGraph::_TyPathNodeBaseAllocatorAsPassed >  
         gcs( _r, *this, false, true, _TyBaseGraph::get_base_path_allocator() );
     gcs.m_pgnSrcCopyRoot = _r.get_root();
     if ( gcs.m_pgnSrcCopyRoot )
@@ -474,10 +485,12 @@ public:
                       t_TyCopyNodeObject const & _rcno,
                       t_TyCopyLinkObject const & _rclo )
   {
+    if ( static_cast< const void * >( &_r ) == static_cast< const void * >( this ) )
+      return; // Copying ourselves - we would destroy the source below.
     // This destroys the current graph first - could do otherwise:
     destroy();
 
-    _graph_copy_struct< t_TyGraph, _TyThis, 
+    _graph_copy_struct< t_TyGraph, _TyThis,
       typename _TyBaseGraph::_TyPathNodeBaseAllocatorAsPassed,
       t_TyCopyNodeObject, t_TyCopyLinkObject > 
         gcs( _r, *this, false, true, _TyBaseGraph::get_base_path_allocator(), _rcno, _rclo );
